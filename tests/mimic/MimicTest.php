@@ -93,13 +93,13 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	}
 	
 	/**
-	 * @depends test_constructor_params_should_override_config();
+	 * @depends test_constructor_params_should_override_config
 	 * @depends test_instance_should_implement_singleton_with_reset
 	 */
 	public function test_instance_should_pass_config_array_to_new_instance()
 	{
 		$mimic = Mimic::instance(array('base_path'=>'/foo/singleton/path'), TRUE);
-		$this->assertAttributeEquals('/foo/config_setting', '_base_path', $mimic);
+		$this->assertAttributeEquals('/foo/singleton/path', '_base_path', $mimic);
 		$this->assertAttributeEquals('default_config', '_active_mime', $mimic);	
 	}
 	
