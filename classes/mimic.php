@@ -32,6 +32,16 @@ class Mimic
 	protected $_active_mime = null;
 	
 	/**
+	 * @var string The current external client to use
+	 */
+	protected $_external_client = null;
+	
+	/**	 
+	 * @var string The previously active external request client
+	 */
+	protected static $_previous_external_client = null;
+	
+	/**
 	 * Provides a singleton implementation for Mimic. The singleton can be reset by
 	 * passing TRUE as the second parameter - this is mostly intended for unit
 	 * tests, but may be useful in some edge cases.
@@ -78,9 +88,15 @@ class Mimic
 		return $instance;		
 	}
 	
+	/**
+	 * The Request_Client_External client type that was active before Mimic was
+	 * loaded (used for recording new requests)
+	 * 
+	 * @return string
+	 */
 	public static function previous_external_client()
 	{
-		
+		return self::$_previous_external_client;
 	}
 	
 	/**
@@ -97,7 +113,15 @@ class Mimic
 		{
 			$property = '_'.$property;
 			$this->$property = $value;
-		}	
+		}
+		
+		// Store the previously active request client and setup Mimic
+		if (Kohana_Request_Client_External::$client != 'Request_Client_Mimic')
+		{
+			self::$_previous_external_client = Kohana_Request_Client_External::$client;
+			Kohana_Request_Client_External::$client = 'Request_Client_Mimic';
+		}
+		
 	}
 	
 	/**
@@ -176,13 +200,26 @@ class Mimic
 	 * Getter/Setter for the external request client to use for recording
 	 * If called with no parameters, returns the current setting.
 	 * 
+	 * If the external_client property of this instance (from constructor or 
+	 * config) is null, will use the value of Mimic::previous_external_client()
+	 * 
 	 * @param string $client
 	 * @return Mimic (If used as setter)
 	 * @return string (If used as getter)
 	 */	
 	public function external_client($client = null)
 	{
-		return $this->_getter_setter('_external_client', $client);
+		if ($client === null)
+		{
+			if ($this->_external_client === null)
+			{
+				return self::previous_external_client();
+			}
+			return $this->_external_client;
+		}
+		
+		$this->_external_client = $client;
+		return $this;		
 	}
 	
 	public function reset_requests()
