@@ -41,9 +41,21 @@ class Mimic
 		
 	}
 	
+	/**
+	 * Constructs a new Mimic instance, optionally setting configuration data.
+	 * Configuration data provided will be merged with the configuration in the "mimic" configuration group.
+	 * 
+	 * @param array $config 
+	 */
 	public function __construct($config = array())
 	{
-		
+		// Merge configuration with passed params, and set properties
+		$config = Arr::merge(Kohana::$config->load('mimic'), $config);
+		foreach ($config as $property => $value)
+		{
+			$property = '_'.$property;
+			$this->$property = $value;
+		}	
 	}
 	
 	public function base_path($path = null)
