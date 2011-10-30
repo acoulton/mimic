@@ -36,6 +36,11 @@ class Mimic
 	 */
 	protected $_external_client = null;
 	
+	/**
+	 * @var array The history of requests (with responses) that have been made
+	 */
+	protected $_request_stack = array();
+	
 	/**	 
 	 * @var string The previously active external request client
 	 */
@@ -242,29 +247,86 @@ class Mimic
 		return $this;		
 	}
 	
+	/**
+	 * Reset the request history and create a clean stack for testing - this
+	 * would generally be called in your setUp() method of a test case in PHPUnit, 
+	 * for example.
+	 */
 	public function reset_requests()
 	{
-		
+		$this->_request_stack = array();
 	}
 	
+	/**
+	 * Get the number of requests that have been executed
+	 * 
+	 * @return integer
+	 */
 	public function request_count()
 	{
-		
+		return count($this->_request_stack);
 	}
 	
+	/**
+	 * Get the request at position <$id> in the history, or get the full history
+	 * if called with no parameters. Requests are collected as a stack, with
+	 * the first request at id=0 and so on.
+	 * 
+	 * @param integer $id The position of the request to get
+	 * @return Request
+	 */
 	public function request_history($id = null)
 	{
+		// With no parameter, return the full history
+		if ($id === null)
+		{
+			return $this->_request_stack;
+		}
 		
+		// Test that the requested id is in range
+		if ( ! isset($this->_request_stack[$id]))
+		{
+			throw new RangeException("Request $id is out of range - ".count($this->_request_stack)." requests in the history");
+		}
+		
+		// Return the request at $id
+		return $this->_request_stack[$id];		
 	}
 	
+	/**
+	 * Get the most recent request from the stack - a quick helper method.
+	 * 
+	 *    // These are equivalent
+	 *    $last = array_pop($mimic->request_history());
+	 *    
+	 *    $last = $mimic->request_history($mimic->request_count() - 1);
+	 *    
+	 *    $last = $mimic->last_request();
+	 * 
+	 * @return Request 
+	 */
 	public function last_request()
-	{
+	{		
+		$id = count($this->_request_stack) - 1;
 		
+		if ($id < 0)
+		{
+			throw new RangeException("Cannot return last request as there are no requests in the history");
+		}
+		
+		return $this->_request_stack[$id];
 	}
 	
+	/**
+	 * Adds a request to the history stack - called by Request_Client_Mimic
+	 * every time a request is executed.
+	 * 
+	 * [!!] It would be very rare to call this method from a client application/test case.
+	 * @param Request $request 
+	 */
 	public function log_request($request)
 	{
-		
+		$this->_request_stack[] = $request;
 	}
 
 } // End Mimic

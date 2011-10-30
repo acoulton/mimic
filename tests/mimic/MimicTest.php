@@ -272,7 +272,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	{
 		$requests = $mimic->request_history();
 		$this->assertInternalType('array', $requests);
-		$this->assertEquals(2, count($requests));
+		$this->assertEquals(3, count($requests));
 	}
 	
 	/**
@@ -285,7 +285,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 		
 		$this->assertInstanceOf('Request', $request);
 		$this->assertEquals("http://foo.bar.com/2", $request->uri());
-	}
+	}		
 	
 	/**
 	 * @depends test_should_count_requests_made
@@ -297,6 +297,16 @@ class Mimic_MimicTest extends Unittest_TestCase {
 		
 		$this->assertEquals(0, $mimic->request_count());
 		return $mimic;
+	}
+	
+	/**
+	 * @depends test_reset_should_clear_request_count
+	 * @param Mimic $mimic 
+	 * @expectedException RangeException
+	 */
+	public function test_should_not_return_last_request_with_no_requests($mimic)
+	{
+		$request = $mimic->last_request();
 	}
 	
 	/**
