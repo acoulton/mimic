@@ -11,7 +11,32 @@
  */
 class Mimic 
 {
+	/**
+	 * @var string The base path to use for storing request/response files
+	 */
+	protected $_base_path = null;
+	
+	/**
+	 * @var boolean Whether recording is enabled
+	 */
+	protected $_enable_recording = null;
+	
+	/**
+	 * @var boolean Whether updating is enabled
+	 */
+	protected $_enable_updating = null;
+	
+	/**
+	 * @var string The current mime (scenario) to use
+	 */
+	protected $_active_mime = null;
+	
 	public static function instance($config = array(), $reset = null)
+	{
+		
+	}
+	
+	public static function previous_external_client()
 	{
 		
 	}
