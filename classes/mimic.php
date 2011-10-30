@@ -31,9 +31,51 @@ class Mimic
 	 */
 	protected $_active_mime = null;
 	
+	/**
+	 * Provides a singleton implementation for Mimic. The singleton can be reset by
+	 * passing TRUE as the second parameter - this is mostly intended for unit
+	 * tests, but may be useful in some edge cases.
+	 * 
+	 *     // Get the singleton
+	 *     $mimic = Mimic::instance();
+	 * 
+	 *     // Get a fresh singleton
+	 *     $mimic = Mimic::instance(array(), TRUE);
+	 * 
+	 *     // Will throw Mimic_Exception_AlreadyInitialised if setting params on existing
+	 *     // instance
+	 *     try
+	 *     {
+	 *         $mimic = Mimic::instance(array('base_path'=>'fail'));
+	 *     }
+	 *     catch (Mimic_Exception_AlreadyInitialised $e)
+	 *     {
+	 *         // Not a valid operation - reset the singleton or 
+	 *         // set individual properties
+	 *     }
+	 * 
+	 * @staticvar Mimic $instance The current instance
+	 * @param array $config Configuration data
+	 * @param boolean $reset Whether to reset the current singleton
+	 * @return Mimic 
+	 */
 	public static function instance($config = array(), $reset = null)
 	{
-		
+		static $instance = null;
+
+		if ($reset OR ( ! $instance))
+		{
+			$instance = new Mimic($config);
+		}
+		else
+		{
+			if (count($config))
+			{
+				throw new Mimic_Exception_AlreadyInitialised(
+						'Cannot pass constructor parameters to an existing singleton');
+			}
+		}		
+		return $instance;		
 	}
 	
 	public static function previous_external_client()

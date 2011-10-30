@@ -83,20 +83,13 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	 */
 	public function test_instance_should_implement_singleton_with_reset($reset)
 	{
-		$mimic1 = Mimic::instance(array(), $reset);		
-		$mimic2 = Mimic::instance();
+		$mimic1 = Mimic::instance();		
+		$mimic2 = Mimic::instance(array(),$reset);
 		
 		$this->assertInstanceOf('Mimic', $mimic1);
 		$this->assertInstanceOf('Mimic', $mimic2);
 		
-		if ($reset)
-		{
-			$this->assertNotEquals($mimic1, $mimic2);
-		}
-		else
-		{
-			$this->assertEquals($mimic1, $mimic2);
-		}
+		$this->assertEquals( ! $reset, $mimic1 === $mimic2, "Both mimic instances are the same");
 	}
 	
 	/**
