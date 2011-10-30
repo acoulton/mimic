@@ -100,19 +100,61 @@ class Mimic
 		}	
 	}
 	
+	/**
+	 * DRY implementation of getter/setter methods
+	 * @param string $property
+	 * @param mixed $value 
+	 */
+	protected function _getter_setter($property,$value)
+	{
+		// Use as a getter
+		if ($value === null)
+		{
+			return $this->$property;
+		}
+		
+		// Use as a setter
+		$this->$property = $value;		
+		return $this;		
+	}
+	
+	/**
+	 * Getter/Setter for the base_path where mime scenario files will be stored.
+	 * If called with no parameters, returns the current setting.
+	 * 
+	 * @param string $path
+	 * @return Mimic (If used as setter)
+	 * @return string (If used as getter)
+	 */
 	public function base_path($path = null)
 	{
-		
+		return $this->_getter_setter('_base_path', $path);
 	}
-	
+
+	/**
+	 * Getter/Setter for whether to enable recording of unmatched requests
+	 * If called with no parameters, returns the current setting.
+	 * 
+	 * @param boolean $enable
+	 * @return Mimic (If used as setter)
+	 * @return string (If used as getter)
+	 */
 	public function enable_recording($enable = null)
 	{
-		
+		return $this->_getter_setter('_enable_recording', $enable);
 	}
 	
+	/**
+	 * Getter/Setter for whether to enable updating of request recordings
+	 * If called with no parameters, returns the current setting.
+	 * 
+	 * @param boolean $enable
+	 * @return Mimic (If used as setter)
+	 * @return string (If used as getter)
+	 */	
 	public function enable_updating($enable = null)
 	{
-		
+		return $this->_getter_setter('_enable_updating', $enable);
 	}
 	
 	public function load_mime($mime_name)
@@ -130,9 +172,17 @@ class Mimic
 		
 	}
 	
+	/**
+	 * Getter/Setter for the external request client to use for recording
+	 * If called with no parameters, returns the current setting.
+	 * 
+	 * @param string $client
+	 * @return Mimic (If used as setter)
+	 * @return string (If used as getter)
+	 */	
 	public function external_client($client = null)
 	{
-		
+		return $this->_getter_setter('_external_client', $client);
 	}
 	
 	public function reset_requests()
