@@ -213,7 +213,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	{
 		$mimic = new Mimic();
 		
-		$this->assertEquals('/foo/config_setting/default_config', $mimic->get_mime_path());
+		$this->assertEquals('/foo/config_setting'.DIRECTORY_SEPARATOR.'default_config'.DIRECTORY_SEPARATOR, $mimic->get_mime_path());
 	}
 	
 	public function test_should_count_requests_made()

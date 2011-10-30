@@ -181,19 +181,39 @@ class Mimic
 		return $this->_getter_setter('_enable_updating', $enable);
 	}
 	
+	/**
+	 * Loads a new mime scenario - used to handle testing multiple responses from the 
+	 * same request - for example if the destination server is down, or to 
+	 * deal with authenticated vs anonymous access.
+	 * 
+	 * @param string $mime_name
+	 * @return Mimic 
+	 */
 	public function load_mime($mime_name)
 	{
-		
+		$this->_active_mime = $mime_name;
+		return $this;
 	}
 	
+	/**
+	 * Returns the currently active mime scenario
+	 * 
+	 * @return type 
+	 */
 	public function get_active_mime()
 	{
-		
+		return $this->_active_mime;
 	}
 	
+	/**
+	 * Returns the base path for request/response files in the current mime
+	 * scenario.
+	 * 
+	 * @return string
+	 */
 	public function get_mime_path()
 	{
-		
+		return $this->_base_path.DIRECTORY_SEPARATOR.$this->_active_mime.DIRECTORY_SEPARATOR;
 	}
 	
 	/**
