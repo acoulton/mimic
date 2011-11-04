@@ -173,10 +173,11 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 */ 
 	public function test_should_store_request_headers()
 	{
+		// NB - HTTP headers are not case sensitive, and Kohana lowercases them
 		$headers = array(
-			'Authorization'=>'Token foo',
-			'Accept'=>'*/*',
-			'X-Request-With'=>'ajax');
+			'authorization'=>'Token foo',
+			'accept'=>'*/*',
+			'x-request-with'=>'ajax');
 		
 		$store = new Mimic_Request_Store($this->_mimic);
 		$request = $this->_get_request('http://ingenerator.com/data', 'GET', 
@@ -203,7 +204,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		$store->record($request);
 		
 		$index = $this->_get_recorded_index();
-		$this->assertEquals($index[0]['query'], $headers);
+		$this->assertEquals($index[0]['query'], $query);
 	}
 
 	/**

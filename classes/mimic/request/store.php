@@ -51,9 +51,16 @@ class Mimic_Request_Store
 		
 		// Prepare the filesystem and request data
 		$request_store_path = $this->_request_store_path($request, true);
-		$request_data = array();
-		
-		
+		$request_data = array(
+			'method' => $request->method(),
+			'headers'=> array(),
+			'query' => $request->query()
+		);
+				
+		foreach ($request->headers() as $key=>$value)
+		{
+			$request_data['headers'][$key] = $value;
+		}
 		
 		// Make an entry in the index file
 		$requests = array($request_data);
