@@ -45,10 +45,11 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		$this->_file_system = vfsStream::setup('mimes');
 		
 		// Setup the mock mimic
-		$this->_mimic = $this->getMock('Mimic');
+		$this->_mimic = $this->getMock('Mimic', array(), 
+				array(), '', FALSE);
 		$this->_mimic->expects($this->any())
 				->method('get_mime_path')
-				->will($this->returnValue(vfsStream::url('mimes')));
+				->will($this->returnValue(vfsStream::url('mimes/')));
 	}
 	
 	/**
@@ -99,7 +100,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 */
 	protected function _get_recorded_index($index_file = 'http/ingenerator/com/data/request_index.php')
 	{
-		$index = require(vfsStream::url('mimes/'.$index_file));
+		$index = require(vfsStream::url('mimes/'.$index_file));		
 		return $index;
 	}
 	
@@ -221,5 +222,14 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	public function test_should_store_correct_response_filename()
 	{
 		$this->markTestIncomplete('Formatter implementation is pending');
+	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
+	 */ 
+	public function test_should_append_to_index_file_if_no_matches()
+	{
+		$this->markTestIncomplete('Append is pending');
 	}
 }
