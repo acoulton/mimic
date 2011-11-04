@@ -71,7 +71,22 @@ class Mimic_Request_Store
 		$requests = array($request_data);
 		file_put_contents($request_store_path.'request_index.php',
 				'<?php'.PHP_EOL
-				.'return '.var_export($requests,true).';');
+				.'return '.$this->_export_array_pretty($requests).';');
+	}
+	
+	/**
+	 * Wraps var_export to give a more compact formatting of arrays - closer
+	 * to the Kohana coding standards for config files.
+	 * 
+	 * @param array $array
+	 * @return string 
+	 */
+	protected function _export_array_pretty($array)
+	{
+		$code = var_export($array, true);
+		$code = preg_replace('/=>\s+array \(/', '=> array(', $code);
+		$code = preg_replace('/array\s?\(\s+\),/', 'array(),', $code);	
+		return $code;
 	}
 	
 	/**
@@ -100,7 +115,7 @@ class Mimic_Request_Store
 		$path = $this->_mimic->get_mime_path().$path;
 		
 		// Create if required
-		if ($create)
+		if ($create AND ( ! file_exists($path)))
 		{
 			mkdir($path, '0700', true);
 		}
