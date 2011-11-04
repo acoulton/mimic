@@ -303,6 +303,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		return array(
 			array('application/json','Mock_Mimic_Response_Formatter_JSON'),
 			array('text/html','Mock_Mimic_Response_Formatter_Generic'),
+			array('application/json; charset=ISO-8859-1', 'Mock_Mimic_Response_Formatter_JSON')
 		);
 	}
 

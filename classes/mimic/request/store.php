@@ -62,7 +62,7 @@ class Mimic_Request_Store
 			)
 		);
 		
-		// Format and store the response body
+		// Format and store the response body		
 		$formatter = $this->_get_formatter($response->headers('Content-Type'));
 		$request_data['response']['body_file'] = $formatter->put_contents(
 				$request_store_path, 'request', $response->body());
@@ -137,6 +137,13 @@ class Mimic_Request_Store
 		{
 			$config = Kohana::$config->load('mimic');
 			$formatters = $config['response_formatters'];
+		}
+		
+		// Parse a combined content-type value
+		$segments = explode(';', $content_type);
+		if (is_array($segments))
+		{
+			$content_type = trim($segments[0]);
 		}
 		
 		// Get the specific formatter for this content type,
