@@ -32,6 +32,7 @@ class Mimic_Response_Formatter
 	public function put_contents($path, $file_prefix ,$content)
 	{
 		$file = $file_prefix.$this->_extension;
+		file_put_contents($path.$file, $content);
 		return $file;
 	}
 	
