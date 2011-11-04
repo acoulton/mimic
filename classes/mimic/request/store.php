@@ -42,26 +42,28 @@ class Mimic_Request_Store
 	public function record(Request $request)
 	{
 		// Check that the request has been executed
-		if ($request->response() === NULL)
+		$response = $request->response();
+		if ($response === NULL)
 		{
 			throw new Mimic_Exception_NotExecuted(
 				'Could not record the :method request to :uri because the request has not been executed', 
 					array(':method'=>$request->method(),':uri'=>$request->uri()));
 		}
 		
-		// Prepare the filesystem and request data
+		// Prepare the index entry
 		$request_store_path = $this->_request_store_path($request, true);
 		$request_data = array(
 			'method' => $request->method(),
-			'headers'=> array(),
-			'query' => $request->query()
+			'headers'=> (array) $request->headers(),
+			'query' => $request->query(),
+			'response' => array(
+				'status' => $response->status(),
+				'headers' => (array) $response->headers(),
+			)
 		);
-				
-		foreach ($request->headers() as $key=>$value)
-		{
-			$request_data['headers'][$key] = $value;
-		}
 		
+		// Format and store the response body
+						
 		// Make an entry in the index file
 		$requests = array($request_data);
 		file_put_contents($request_store_path.'request_index.php',

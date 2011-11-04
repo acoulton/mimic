@@ -210,6 +210,41 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	/**
 	 * @depends test_should_store_request_in_expected_file
 	 * @depends test_should_store_index_as_exported_php_array
+	 */ 	
+	public function test_should_store_response_status()
+	{
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET', array(), array(), 404);
+		$store->record($request);
+		
+		$index = $this->_get_recorded_index();
+		$this->assertEquals($index[0]['response']['status'], 404);		
+	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
+	 */ 
+	public function test_should_store_response_headers()
+	{
+		// NB - HTTP headers are not case sensitive, and Kohana lowercases them
+		$headers = array(
+			'content-type'=>'blah/blah',
+			'cookie'=>'string',
+			'x-request-with'=>'data');
+		
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET', 
+				array(), array(), 200, $headers);
+		$store->record($request);
+		
+		$index = $this->_get_recorded_index();
+		$this->assertEquals($index[0]['response']['headers'], $headers);		
+	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
 	 */ 
 	public function test_should_store_response_body_with_appropriate_formatter()
 	{		
