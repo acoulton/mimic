@@ -113,7 +113,7 @@ class Mimic
 	public function __construct($config = array())
 	{
 		// Merge configuration with passed params, and set properties
-		$config = Arr::merge(Kohana::$config->load('mimic'), $config);
+		$config = Arr::merge((array)Kohana::$config->load('mimic'), $config);
 		foreach ($config as $property => $value)
 		{
 			$property = '_'.$property;
