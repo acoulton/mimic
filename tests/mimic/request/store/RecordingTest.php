@@ -139,7 +139,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 * @param string $index_file
 	 * @return array 
 	 */
-	protected function _get_recorded_index($index_file = 'http/ingenerator/com/data/request_index.php')
+	protected function _get_recorded_index($index_file = 'http/ingenerator.com/data/request_index.php')
 	{
 		$index = require(vfsStream::url('mimes/'.$index_file));		
 		return $index;
@@ -149,12 +149,12 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	{
 		return array(
 			array($this->_get_request('http://www.ingenerator.com/the/page/here.php'),
-				'http/www/ingenerator/com/the/page/here.php/request_index.php'),
+				'http/www.ingenerator.com/the/page/here.php/request_index.php'),
 			array($this->_get_request('https://www.ingenerator.com/the/page/here.aspx'),
-				'https/www/ingenerator/com/the/page/here.aspx/request_index.php'),
+				'https/www.ingenerator.com/the/page/here.aspx/request_index.php'),
 			array($this->_get_request('http://www.ingenerator.com/page', 'GET', 
 					array('foo'=>'bar')),
-				'http/www/ingenerator/com/page/request_index.php')
+				'http/www.ingenerator.com/page/request_index.php')
 		);
 	}
 
@@ -178,7 +178,22 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		$store = new Mimic_Request_Store($this->_mimic);
 		$store->record($request);
 		
-		$this->assertTrue($this->_file_system->hasChild($filename));
+		/*
+		 * There seems to be a bug in hasChild that means that www.google.co.uk
+		 * is equivalent to www/google/co/uk?
+		 */
+		$parts = explode('/', $filename);
+		$path = null;
+		while ($parts)
+		{
+			if ($path)
+			{
+				$path .= '/';
+			}
+			$path .= array_shift($parts);
+			$this->assertTrue($this->_file_system->hasChild($path), $path);
+		}
+		
 	}		
 	
 	/**

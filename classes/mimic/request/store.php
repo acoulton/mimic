@@ -102,7 +102,7 @@ class Mimic_Request_Store
 		// Basic path is http/host/com/url/etc
 		$url_parts = parse_url($request->uri());				
 		$path = $url_parts['scheme'].'/'
-				.str_replace('.', '/', $url_parts['host'])
+				.$url_parts['host']
 				.$url_parts['path'];
 		
 		// Ensure there is a trailing /
