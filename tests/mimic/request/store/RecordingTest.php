@@ -20,7 +20,7 @@ require_once 'vfsStream/vfsStream.php';
  * @license    http://kohanaframework.org/license
  */
 class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
-		
+			
 	/**
 	 * A mock Mimic object
 	 * @var Mimic
@@ -32,6 +32,47 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 * @var vfsStreamDirectory 
 	 */
 	protected $_file_system = null;
+	
+	protected static $_old_config = null;
+	
+	/**
+	 * Override Kohana::$config to return our test configuration settings
+	 */
+	public static function setUpBeforeClass()
+	{
+		parent::setUpBeforeClass();
+		
+		// Override Kohana::$config->load() to return our test configs
+		self::$_old_config = Kohana::$config;
+		
+		$config = PHPUnit_Framework_MockObject_Generator::getMock('Config');
+		$config->expects(new PHPUnit_Framework_MockObject_Matcher_AnyInvokedCount)
+				->method('load')
+				->with('mimic')
+				->will(new PHPUnit_Framework_MockObject_Stub_Return(array(
+					'base_path' => '/foo/config_setting',
+					'enable_recording' => false,
+					'enable_updating' => false,
+					'active_mime' => 'default_config',
+					'external_client' => null,
+					'response_formatters' => array(
+						'application/json' => 'Mock_Mimic_Response_Formatter_JSON',
+						'*' => 'Mock_Mimic_Response_Formatter_Generic'
+					)
+					)));
+
+		Kohana::$config = $config;
+	}
+	
+	/**
+	 * Reset Kohana::$config
+	 */
+	public static function tearDownAfterClass()
+	{		
+		Kohana::$config = self::$_old_config;		
+		parent::tearDownAfterClass();
+	}	
+
 
 	/**
 	 * Sets up a mock file system using vfsStream and a mock mimic that will use
@@ -242,22 +283,64 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		$this->assertEquals($index[0]['response']['headers'], $headers);		
 	}
 
-	/**
-	 * @depends test_should_store_request_in_expected_file
-	 * @depends test_should_store_index_as_exported_php_array
-	 */ 
-	public function test_should_store_response_body_with_appropriate_formatter()
-	{		
-		$this->markTestIncomplete('Formatter implementation is pending');
+	public function provider_should_store_response_body_with_appropriate_formatter()
+	{
+		return array(
+			array('application/json','Mock_Mimic_Response_Formatter_JSON'),
+			array('text/html','Mock_Mimic_Response_Formatter_Generic'),
+		);
 	}
 
 	/**
 	 * @depends test_should_store_request_in_expected_file
 	 * @depends test_should_store_index_as_exported_php_array
+	 * @dataProvider provider_should_store_response_body_with_appropriate_formatter
+	 */ 
+	public function test_should_store_response_body_with_appropriate_formatter($content_type, $formatter_class)
+	{		
+		// Prepare a mock formatter
+		$formatter = new $formatter_class;
+		/* @var $formatter Mock_Mimic_Formatter */
+		$formatter->reset();
+		
+		// Execute and record the request
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET', 
+				array(), array(), 200, 
+				array('Content-type'=>$content_type), 
+				'content-foo');
+		$store->record($request);
+
+		// Verify details
+		list($call_count, $content) = $formatter->get_details();
+		$this->assertEquals(1, $call_count, "One call to formatter put_contents");
+		$this->assertEquals('content-foo', $content, "Content passed to formatter");		
+	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
+	 * @depends test_should_store_response_body_with_appropriate_formatter
 	 */ 
 	public function test_should_store_correct_response_filename()
-	{
-		$this->markTestIncomplete('Formatter implementation is pending');
+	{	
+		// Prepare a mock formatter
+		$formatter = new Mock_Mimic_Response_Formatter_Generic;
+		$formatter->reset();
+	
+		// Execute and record the request
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET', 
+				array(), array(), 200, 
+				array('Content-type'=>'foo/foo'), 
+				'content-foo');
+		$store->record($request);
+		
+		// Verify results			
+		$index = $this->_get_recorded_index();
+		
+		$this->assertEquals(Mock_Mimic_Response_Formatter_Generic::$filename,
+				$index[0]['response']['body_file']);	
 	}
 
 	/**
@@ -268,4 +351,56 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	{
 		$this->markTestIncomplete('Append is pending');
 	}
+}
+
+class Mock_Mimic_Formatter extends Mimic_Response_Formatter
+{
+	public static $call_count = 0;
+	public static $content = null;
+	public static $filename = null;
+	
+	/**
+	 * Records the number of calls and the body content for test mocking
+	 * purposes.
+	 * 
+	 * @param string $path
+	 * @param string $file_prefix
+	 * @param string $content
+	 * @return string 
+	 */
+	public function put_contents($path, $file_prefix, $content)
+	{
+		static::$call_count++;
+		static::$content = $content;
+		$filename = parent::put_contents($path, $file_prefix, $content);
+		static::$filename = $filename;
+		return $filename;
+	}
+	
+	/**
+	 * Provides the test with details of number of calls and content passed
+	 * @return type 
+	 */
+	public function get_details()
+	{
+		return array(static::$call_count,static::$content);
+	}
+	
+	/**
+	 * Prepares for a new test
+	 */
+	public function reset()
+	{
+		static::$call_count = 0;
+		static::$content = null;
+		static::$filename = null;
+	}
+}
+
+class Mock_Mimic_Response_Formatter_JSON extends Mock_Mimic_Formatter
+{
+}
+
+class Mock_Mimic_Response_Formatter_Generic extends Mock_Mimic_Formatter
+{
 }
