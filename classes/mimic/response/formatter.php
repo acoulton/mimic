@@ -34,6 +34,6 @@ class Mimic_Response_Formatter
 		$file = $file_prefix.$this->_extension;
 		file_put_contents($path.$file, $content);
 		return $file;
-	}
+	}		
 	
 }
