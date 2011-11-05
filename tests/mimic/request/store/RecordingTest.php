@@ -178,22 +178,8 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		$store = new Mimic_Request_Store($this->_mimic);
 		$store->record($request);
 		
-		/*
-		 * There seems to be a bug in hasChild that means that www.google.co.uk
-		 * is equivalent to www/google/co/uk?
-		 */
-		$parts = explode('/', $filename);
-		$path = null;
-		while ($parts)
-		{
-			if ($path)
-			{
-				$path .= '/';
-			}
-			$path .= array_shift($parts);
-			$this->assertTrue($this->_file_system->hasChild($path), $path);
-		}
-		
+		// This test will only work properly once the fix for vfsStream issue #24 is merged in
+		$this->assertTrue($this->_file_system->hasChild($filename));
 	}		
 	
 	/**
