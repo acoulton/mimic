@@ -204,54 +204,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		$request = $this->_request('HEAD');
 		$this->assertInstanceOf('Response', $store->load($request));		
 	}
-	
-	/**
-	 * @depends test_should_match_exact_request
-	 */
-	public function test_should_match_ignoring_optional_query_params()
-	{
-		/*
-		// Setup the test data
-		$requests = $this->_generic_request_data();
-		$requests[0]['query']['filter2'] = new Mimic_Request_Wildcard_Optional;
-		$this->_create_index_file($requests);
 		
-		// Test matching
-		$store = new Mimic_Request_Store($this->_mimic);
-		
-		$request = $this->_request();
-		$this->assertInstanceOf('Response', $store->load($request));
-		
-		$request = $this->_request('GET', array('filter'=>'bar', 'filter2'=>'test'));
-		$this->assertInstanceOf('Response', $store->load($request));*/
-		$this->markTestIncomplete('Optional header/query keys need more thought');
-	}
-	
-    /**
-	 * @depends test_should_match_exact_request
-	 */
-	public function test_should_match_ignoring_extra_header_keys()
-	{
-		/*
-		// Setup the test data
-		$requests = $this->_generic_request_data();
-		$requests[0]['headers']['x-test-2'] = new Mimic_Request_Wildcard_Optional;
-		$this->_create_index_file($requests);
-
-		
-		// Test matching
-		$store = new Mimic_Request_Store($this->_mimic);
-		
-		$request = $this->_request();
-		$this->assertInstanceOf('Response', $store->load($request));
-
-		$request = $this->_request('GET', array('filter'=>'bar'), 
-				array('X-Test'=>'foo','X-Test-2'=>'bar'));
-		$this->assertInstanceOf('Response', $store->load($request));		
-		*/
-		$this->markTestIncomplete('Optional header/query keys need more thought');	
-	}
-	
 	/**
 	 * @depends test_should_match_exact_request
 	 */
