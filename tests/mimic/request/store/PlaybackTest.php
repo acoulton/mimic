@@ -64,8 +64,8 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		{
 			if (isset($request['response']) AND isset($request['response']['body_file']))
 			{
-				$file = $request_store_path."request$index.body";
-				file_put_contents($file, $request['response']['body_file']);
+				$file = "request$index.body";
+				file_put_contents($request_store_path.$file, $request['response']['body_file']);
 				$requests[$index]['response']['body_file'] = $file;
 			}
 		}
@@ -73,7 +73,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		// Store the index
 		file_put_contents($request_store_path.'request_index.php',
 				'<?php'.PHP_EOL
-				.'return '.var_export($requests,true).';');
+				.'return '.var_export($requests,true).';');		
 	}
 	
 	protected function _request($method = 'GET', $query = array('filter'=>'bar'), $headers = array('X-Test'=>'foo'))
@@ -271,7 +271,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		
 		// Should not match when the header is missing
 		$request = $this->_request('GET',array('filter'=>'bar'),array());
-		$this->assertFalse($store->load($request));				
+		$this->assertNull($store->load($request));				
 	}
 		
 	/**
@@ -293,7 +293,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		
 		// Should not match when the query param is missing
 		$request = $this->_request('GET',array());
-		$this->assertFalse($store->load($request));		
+		$this->assertNull($store->load($request));		
 	}
 	
 	protected function _create_multiple_index()
@@ -395,8 +395,8 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 	/**
 	 * @depends test_should_match_ignoring_wildcard_query_params
 	 * @depends test_should_match_ignoring_wildcard_header_keys
-	 * @depends test_should_match_ignoring_extra_query_params
-	 * @depends test_should_match_ignoring_extra_header_keys	 
+	 * // Not implemented : depends test_should_match_ignoring_extra_query_params
+	 * // Not implemented : depends test_should_match_ignoring_extra_header_keys	 
 	 * @depends test_should_support_wildcard_for_request_method
 	 * @dataProvider provider_should_match_most_specific_entry_in_index_by_method
 	 * 
@@ -415,7 +415,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		
 		if ($expect_response_id === null)
 		{
-			$this->assertFalse($response);
+			$this->assertNull($response);
 		}
 		else
 		{

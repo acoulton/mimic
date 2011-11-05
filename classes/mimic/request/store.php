@@ -14,7 +14,7 @@ class Mimic_Request_Store
 	 *
 	 * @var Mimic
 	 */
-	protected $_mimic = null;
+	protected $_mimic = NULL;
 	
 	/**
 	 * Creates a new Mimic_Request_Store instance - requires a mimic instance
@@ -27,9 +27,31 @@ class Mimic_Request_Store
 		$this->_mimic = $mimic;
 	}
 	
+	/**
+	 * Searches the index for a request definition that matches the current request
+	 * and if found, creates and returns a response object.
+	 * 
+	 * @param Request $request 
+	 * @return Response
+	 */
 	public function load(Request $request)
 	{
+		$request_data = $this->_search_index($request);
 		
+		if ($request_data)
+		{
+			// Create a response object for the data, and load the body from disk
+			$response = $request->create_response();
+			$response->status($request_data['response']['status']);
+			$response->headers($request_data['response']['headers']);
+			if ($body = $request_data['response']['body_file'])
+			{
+				$response->body(file_get_contents($body));
+			}
+			
+			return $response;
+		}
+		return NULL;		
 	}
 	
 	/**
@@ -51,7 +73,7 @@ class Mimic_Request_Store
 		}
 		
 		// Prepare the index entry
-		$request_store_path = $this->_request_store_path($request, true);
+		$request_store_path = $this->_request_store_path($request, TRUE);
 		$request_data = array(
 			'method' => $request->method(),
 			'headers'=> (array) $request->headers(),
@@ -83,7 +105,7 @@ class Mimic_Request_Store
 	 */
 	protected function _export_array_pretty($array)
 	{
-		$code = var_export($array, true);
+		$code = var_export($array, TRUE);
 		$code = preg_replace('/=>\s+array \(/', '=> array(', $code);
 		$code = preg_replace('/array\s?\(\s+\),/', 'array(),', $code);	
 		return $code;
@@ -97,7 +119,7 @@ class Mimic_Request_Store
 	 * @param boolean $create Whether to create the path if not found
 	 * @return string 
 	 */
-	protected function _request_store_path(Request $request, $create = false)
+	protected function _request_store_path(Request $request, $create = FALSE)
 	{		
 		// Basic path is http/host/com/url/etc
 		$url_parts = parse_url($request->uri());				
@@ -117,7 +139,7 @@ class Mimic_Request_Store
 		// Create if required
 		if ($create AND ( ! file_exists($path)))
 		{
-			mkdir($path, '0700', true);
+			mkdir($path, '0700', TRUE);
 		}
 		
 		return $path;
@@ -132,7 +154,7 @@ class Mimic_Request_Store
 	 */
 	protected function _get_formatter($content_type)
 	{
-		static $formatters = null;
+		static $formatters = NULL;
 		if ( ! $formatters)
 		{
 			$config = Kohana::$config->load('mimic');
@@ -158,6 +180,124 @@ class Mimic_Request_Store
 		}
 		
 		return new $class;
+	}
+	
+	protected function _search_index($request)
+	{
+		// Check the index file exists and load it into memory
+		$data_path = $this->_request_store_path($request);
+		if ( ! file_exists($data_path.'request_index.php'))
+		{
+			return FALSE;
+		}		
+		$request_index = include($data_path.'request_index.php');
+		
+		// Work through the index and score the quality of matches
+		$matching_scores = array();		
+		foreach ($request_index as $index_key => $request_criteria)
+		{
+			$scores = array();
+			
+			// Test the request method
+			if ( ! $this->_score_match_method($request->method(), $scores, 
+					$request_criteria['method']))
+			{
+				continue;
+			}
+			
+			// Test the headers
+			if ( ! $this->_score_match_array((array) $request->headers(), $scores, 
+					$request_criteria['headers'], 'header'))
+			{
+				continue;
+			}
+			
+			// Test the query params
+			if ( ! $this->_score_match_array((array) $request->query(), $scores, 
+					$request_criteria['query'], 'query'))
+			{
+				continue;
+			}
+			
+			$matching_scores[$index_key] = $scores;
+			
+		}
+		
+		// Temporarily take the first match
+		if ( ! $matching_scores)
+		{
+			return FALSE;
+		}
+		reset($matching_scores);
+		$matched_request = $request_index[key($matching_scores)];
+				
+		// Make a full path to the body file
+		if (isset($matched_request['response']['body_file']))
+		{
+			$matched_request['response']['body_file'] = $data_path.$matched_request['response']['body_file'];
+		}
+		return $matched_request;
+	}
+	
+	protected function _score_match_method($request_method, & $scores, $criteria_method)
+	{
+		if ($request_method == $criteria_method)
+		{
+			$scores['method'] = 3;
+		}
+		elseif (($request_method == 'HEAD') AND ($criteria_method == 'GET'))
+		{
+			$scores['method'] = 2;
+		}
+		elseif ($criteria_method == '*')
+		{
+			$scores['method'] = 1;
+		}
+		else
+		{
+			return FALSE;			
+		}
+		
+		return TRUE;
+	}
+	
+	protected function _score_match_array($request_array, & $scores, $criteria_array, $type)
+	{
+		$score = 0;
+		
+		// Verify that all required keys are present with the correct values
+		foreach ($criteria_array as $criteria_key => $criteria_value)
+		{
+			// Cannot match if the criteria is not there at all
+			if ( ! isset($request_array[$criteria_key]))
+			{
+				return FALSE;
+			}
+			
+			if ($request_array[$criteria_key] === $criteria_value)
+			{
+				// It matches
+				$score += 2;
+			}
+			elseif ($criteria_value instanceof Mimic_Request_Wildcard_Require)
+			{
+				// It matches less well
+				$score += 1;
+			}
+			
+			// Remove from the request array
+			unset($request_array[$criteria_key]);
+		}
+		
+		// Check if the request array has extra keys
+		if (count($request_array))
+		{
+			return FALSE;
+		}
+		
+		// Set the score
+		$scores[$type]	= $score;	
+		return TRUE;
 	}
 	
 }
