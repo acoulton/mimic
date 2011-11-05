@@ -160,6 +160,7 @@ class Mimic_ClientTest extends Unittest_TestCase {
 		
 		// Mock a Mimic to have recording disabled
 		$this->_mock_mimic_methods($this->once(), 'enable_recording', NULL, FALSE);
+		$this->_mock_mimic_methods($this->once(), 'log_request', $request);
 		$this->_mock_mimic_never('external_client');
 
 		// Mock a store to return empty
@@ -173,7 +174,7 @@ class Mimic_ClientTest extends Unittest_TestCase {
 	 * @depends test_should_allow_injection_of_store
 	 * @depends test_should_allow_injection_of_mimic
 	 */
-	public function test_should_execute_external_request_if_recording_enabled_and_not_found()
+	public function test_should_record_external_request_if_recording_enabled_and_not_found()
 	{
 		// Create a request/response
 		$request = Request::factory('http://foo.bar.com/a/page');
@@ -182,9 +183,11 @@ class Mimic_ClientTest extends Unittest_TestCase {
 		// Mock a Mimic to have recording enabled
 		$this->_mock_mimic_methods($this->once(), 'enable_recording', NULL, TRUE);
 		$this->_mock_mimic_methods($this->once(), 'external_client', NULL, 'Request_Client_Nothing');
+		$this->_mock_mimic_methods($this->once(), 'log_request', $request);
 				
 		// Mock a store to return empty
 		$this->_mock_store_methods($this->once(), 'load', $request, FALSE);
+		$this->_mock_store_methods($this->once(), 'record', $request);
 		
 		// Execute and check the return values
 		$returned_response = $this->_client->_send_message($request);
@@ -195,42 +198,52 @@ class Mimic_ClientTest extends Unittest_TestCase {
 	 * @depends test_should_allow_injection_of_store
 	 * @depends test_should_allow_injection_of_mimic
 	 */
-	public function test_should_record_response_if_recording_enabled_and_not_found()
-	{
-		$this->markTestIncomplete();
-	}
-
-	/**	 
-	 * @depends test_should_allow_injection_of_store
-	 * @depends test_should_allow_injection_of_mimic
-	 */
 	public function test_should_return_matched_response_if_recording_found()
 	{
-		$this->markTestIncomplete();
+		// Create a request/response
+		$request = Request::factory('http://foo.bar.com/a/page');
+		$response = $request->create_response();
+		
+		// Set up Mimic expectations
+		$this->_mock_mimic_methods($this->once(), 'enable_updating', NULL, FALSE);
+		$this->_mock_mimic_never('enable_recording');
+		$this->_mock_mimic_never('external_client');
+		$this->_mock_mimic_methods($this->once(), 'log_request', $request);
+				
+		// Mock a store to return response
+		$this->_mock_store_methods($this->once(), 'load', $request, $response);
+		$this->_mock_store_never('record');
+		
+		// Execute and check the return values
+		$returned_response = $this->_client->_send_message($request);
+		$this->assertSame($response, $returned_response, "The same response instance was returned");
 	}
 	
 	/**	 
 	 * @depends test_should_allow_injection_of_store
 	 * @depends test_should_allow_injection_of_mimic
 	 */
-	public function test_should_execute_external_request_if_updating_enabled()
+	public function test_should_record_and_return_external_request_if_updating_enabled()
 	{
-		$this->markTestIncomplete();
+		// Create a request/response
+		$request = Request::factory('http://foo.bar.com/a/page');
+		$response = $request->create_response();
+		
+		// Mock a Mimic to have recording enabled
+		$this->_mock_mimic_methods($this->once(), 'enable_updating', NULL, TRUE);
+		$this->_mock_mimic_never('enable_recording');
+		$this->_mock_mimic_methods($this->once(), 'external_client', NULL, 'Request_Client_Nothing');
+		$this->_mock_mimic_methods($this->once(), 'log_request', $request);
+				
+		// Mock a store to return empty
+		$this->_mock_store_methods($this->once(), 'load', $request, $response);
+		$this->_mock_store_methods($this->once(), 'record', $request);
+		
+		// Execute and check the return values
+		$returned_response = $this->_client->_send_message($request);
+		$this->assertSame($response, $returned_response, "The same response instance was returned");
 	}
-	
-	/**	 
-	 * @depends test_should_allow_injection_of_store
-	 * @depends test_should_allow_injection_of_mimic
-	 */
-	public function test_should_store_external_request_if_updating_enabled()
-	{
-		$this->markTestIncomplete();
-	}
-	
-	public function test_should_log_every_request()
-	{
-		$this->markTestIncomplete();
-	}
+		
 }
 
 class Request_Client_Nothing extends Request_Client_External

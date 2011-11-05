@@ -43,6 +43,16 @@ class Request_Client_Mimic extends Request_Client_External
 		// Check to see if the request can be replayed from storage
 		if ($response = $store->load($request))
 		{
+			if ($mimic->enable_updating())
+			{
+				// Reset, execute the request, store and return
+				$request->response(NULL);
+				$this->_send_external($request);
+				$store->record($request);
+				$response = $request->response();				
+			}
+			
+			// Return the response
 			return $response;
 		}
 		else
