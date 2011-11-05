@@ -351,7 +351,20 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 */ 
 	public function test_should_append_to_index_file_if_no_matches()
 	{
-		$this->markTestIncomplete();
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET', 
+				array(), array(), 200, array('x-req'=>'get'),'get-content-foo');
+		$store->record($request);
+		
+		$request = $this->_get_request('http://ingenerator.com/data', 'POST',
+				array(), array(), 200, array('x-req'=>'post'), 'post-content-foo');
+		$store->record($request);
+		
+		$index = $this->_get_recorded_index();
+		
+		$this->assertEquals(2, count($index));
+		$this->assertEquals('get', $index[0]['response']['headers']['x-req']);
+		$this->assertEquals('post', $index[1]['response']['headers']['x-req']);
 	}
 
 	/**

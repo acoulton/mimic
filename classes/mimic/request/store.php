@@ -72,8 +72,20 @@ class Mimic_Request_Store
 					array(':method'=>$request->method(),':uri'=>$request->uri()));
 		}
 		
-		// Prepare the index entry
+		// Search in the index to check if this request matches an existing definition
 		$request_store_path = $this->_request_store_path($request, TRUE);
+		if ( ! $this->_search_index($request, $request_index_array, $matched_index))
+		{
+			// It doesn't exist - append a new item
+			$matched_index = count($request_index_array);
+		}
+		else
+		{
+			// @todo: Update an existing request
+		}
+		
+		// Prepare this item's index entry
+		$formatter = $this->_get_formatter($response->headers('Content-Type'));
 		$request_data = array(
 			'method' => $request->method(),
 			'headers'=> (array) $request->headers(),
@@ -81,19 +93,16 @@ class Mimic_Request_Store
 			'response' => array(
 				'status' => $response->status(),
 				'headers' => (array) $response->headers(),
+				'body_file' => $formatter->put_contents(
+					$request_store_path, "response_$matched_index", $response->body())
 			)
 		);
-		
-		// Format and store the response body		
-		$formatter = $this->_get_formatter($response->headers('Content-Type'));
-		$request_data['response']['body_file'] = $formatter->put_contents(
-				$request_store_path, 'request', $response->body());
-						
-		// Make an entry in the index file
-		$requests = array($request_data);
+								
+		// Write the index file		
+		$request_index_array[$matched_index] = $request_data;
 		file_put_contents($request_store_path.'request_index.php',
 				'<?php'.PHP_EOL
-				.'return '.$this->_export_array_pretty($requests).';');
+				.'return '.$this->_export_array_pretty($request_index_array).';');
 	}
 	
 	/**
@@ -188,9 +197,11 @@ class Mimic_Request_Store
 	 * found, or NULL if not.
 	 * 
 	 * @param Request $request
+	 * @param array $request_index_array Passed by reference and returns the full index array
+	 * @param integer $matched_index Passed by reference and returns index of the matched entry
 	 * @return array 
 	 */
-	protected function _search_index($request)
+	protected function _search_index($request, & $request_index_array = array(), & $matched_index = null)
 	{
 		// Check the index file exists and load it into memory
 		$data_path = $this->_request_store_path($request);
@@ -198,11 +209,11 @@ class Mimic_Request_Store
 		{
 			return FALSE;
 		}		
-		$request_index = include($data_path.'request_index.php');
+		$request_index_array = include($data_path.'request_index.php');
 		
 		// Work through the index and score the quality of matches
 		$matching_scores = array();		
-		foreach ($request_index as $index_key => $request_criteria)
+		foreach ($request_index_array as $index_key => $request_criteria)
 		{
 			$scores = array();
 			
@@ -241,7 +252,8 @@ class Mimic_Request_Store
 		}
 		arsort($matching_scores);
 		reset($matching_scores);
-		$matched_request = $request_index[key($matching_scores)];
+		$matched_index = key($matching_scores);
+		$matched_request = $request_index_array[$matched_index];
 				
 		// Make a full path to the body file
 		if (isset($matched_request['response']['body_file']))
