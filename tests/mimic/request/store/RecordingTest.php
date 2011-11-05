@@ -351,7 +351,16 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 */ 
 	public function test_should_append_to_index_file_if_no_matches()
 	{
-		$this->markTestIncomplete('Append is pending');
+		$this->markTestIncomplete();
+	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
+	 */ 
+	public function test_should_update_index_file_if_matched_and_updating()
+	{
+		$this->markTestIncomplete();
 	}
 }
 
