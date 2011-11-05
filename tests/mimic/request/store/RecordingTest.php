@@ -370,11 +370,92 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	/**
 	 * @depends test_should_store_request_in_expected_file
 	 * @depends test_should_store_index_as_exported_php_array
+	 * @expectedException Mimic_Exception_UpdatingDisabled
 	 */ 
-	public function test_should_update_index_file_if_matched_and_updating()
+	public function test_should_not_update_if_updating_disabled()
 	{
-		$this->markTestIncomplete();
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'GET',
+				array('foo'=>'bar'), array('x-head'=>'test'),
+				200, array(),'content');
+		
+		$this->_mimic->expects($this->once())
+				->method('enable_updating')
+				->with(NULL)
+				->will($this->returnValue(FALSE));
+				
+		$store->record($request);
+		$store->record($request);
 	}
+
+	/**
+	 * @depends test_should_store_request_in_expected_file
+	 * @depends test_should_store_index_as_exported_php_array
+	 */ 
+	public function test_should_update_response_when_updating()
+	{
+		// Create a wildcard request definition
+		$data = array(
+			array(
+				'method'=> '*',
+				'query' => array('foo'=>new Mimic_Request_Wildcard_Require),
+				'headers' => array('x-temp'=>new Mimic_Request_Wildcard_Require),
+				'response' => array(
+					'status' => 200,
+					'headers' => array('x-resp'=>'foo'),
+					'body_file' => null
+				)));
+		$request_store_path = vfsStream::url('mimes/http/ingenerator.com/data/');		
+		mkdir($request_store_path, '0700', true);
+		
+		file_put_contents($request_store_path.'request_index.php',
+				'<?php'.PHP_EOL
+				.'return '.var_export($data,true).';');
+		
+		// Prepare other classes		
+		$store = new Mimic_Request_Store($this->_mimic);
+		$request = $this->_get_request('http://ingenerator.com/data', 'PUT',
+				array('foo'=>'bar'), array('x-temp'=>'test'),
+				500, array('x-resp-head'=>'test'),'content');
+		
+		$this->_mimic->expects($this->once())
+				->method('enable_updating')
+				->with(NULL)
+				->will($this->returnValue(TRUE));
+		
+		// Trigger an update		
+		$store->record($request);
+		
+		// Verify behaviour
+		$index = $this->_get_recorded_index();
+		
+		$this->assertEquals(1, count($index));
+		$this->assertEquals('test', $index[0]['response']['headers']['x-resp-head']);
+		$this->assertEquals('500', $index[0]['response']['status']);
+		$this->assertNotNull($index[0]['response']['body_file']);
+		return $index;
+	}
+
+	/**
+	 * @depends test_should_update_response_when_updating
+	 */ 	
+	public function test_should_not_change_request_definition_when_updating($index)
+	{
+		$this->assertEquals('*', $index[0]['method']);		
+		$this->assertInstanceOf('Mimic_Request_Wildcard_Require', $index[0]['query']['foo']);
+		$this->assertInstanceOf('Mimic_Request_Wildcard_Require', $index[0]['headers']['x-temp']);
+	}
+	
+	/**
+	 * @depends test_should_update_response_when_updating
+	 */ 
+	public function test_should_store_executed_request_separately_when_updating($index)
+	{
+		$this->assertEquals('PUT', $index[0]['_executed_request']['method']);
+		$this->assertEquals('bar', $index[0]['_executed_request']['query']['foo']);
+		$this->assertEquals('test', $index[0]['_executed_request']['headers']['x-temp']);
+	}
+		
 }
 
 class Mock_Mimic_Formatter extends Mimic_Response_Formatter

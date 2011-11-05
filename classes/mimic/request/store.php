@@ -72,34 +72,47 @@ class Mimic_Request_Store
 					array(':method'=>$request->method(),':uri'=>$request->uri()));
 		}
 		
+		// Prepare the request entry
+		$this_request_data = array(
+			'method' => $request->method(),
+			'headers'=> (array) $request->headers(),
+			'query' => $request->query()	
+			);
+		
 		// Search in the index to check if this request matches an existing definition
 		$request_store_path = $this->_request_store_path($request, TRUE);
-		if ( ! $this->_search_index($request, $request_index_array, $matched_index))
+		if ( ! ($matched_request = $this->_search_index($request, $request_index_array, $matched_index)))
 		{
 			// It doesn't exist - append a new item
 			$matched_index = count($request_index_array);
+			$request_entry = $this_request_data;
 		}
 		else
 		{
-			// @todo: Update an existing request
+			if ( ! $this->_mimic->enable_updating())
+			{
+				throw new Mimic_Exception_UpdatingDisabled(
+						"Mimic updating is disabled - could not update entry :matched_index in :request_store_path",
+						array(':matched_index'=>$matched_index,
+							':request_store_path'=>$request_store_path));
+			}
+			
+			// Update the existing request entry - store the actual request executed
+			$request_entry = $matched_request;			
+			$request_entry['_executed_request'] = $this_request_data;
 		}
 		
-		// Prepare this item's index entry
+		// Store the item's response
 		$formatter = $this->_get_formatter($response->headers('Content-Type'));
-		$request_data = array(
-			'method' => $request->method(),
-			'headers'=> (array) $request->headers(),
-			'query' => $request->query(),
-			'response' => array(
-				'status' => $response->status(),
-				'headers' => (array) $response->headers(),
-				'body_file' => $formatter->put_contents(
+		$request_entry['response'] = array(
+			'status' => $response->status(),
+			'headers' => (array) $response->headers(),
+			'body_file' => $formatter->put_contents(
 					$request_store_path, "response_$matched_index", $response->body())
-			)
-		);
+			);
 								
 		// Write the index file		
-		$request_index_array[$matched_index] = $request_data;
+		$request_index_array[$matched_index] = $request_entry;
 		file_put_contents($request_store_path.'request_index.php',
 				'<?php'.PHP_EOL
 				.'return '.$this->_export_array_pretty($request_index_array).';');
