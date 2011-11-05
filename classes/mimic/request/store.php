@@ -182,6 +182,14 @@ class Mimic_Request_Store
 		return new $class;
 	}
 	
+	/**
+	 * Searches within a request index file to identify the most specific match
+	 * for the passed in request. Returns an array of request/response data if 
+	 * found, or NULL if not.
+	 * 
+	 * @param Request $request
+	 * @return array 
+	 */
 	protected function _search_index($request)
 	{
 		// Check the index file exists and load it into memory
@@ -219,15 +227,19 @@ class Mimic_Request_Store
 				continue;
 			}
 			
-			$matching_scores[$index_key] = $scores;
+			// Combine the scores to give an overall value
+			// Request method always trumps everything else, header and query are equal
+			$score = (1000 * $scores['method']) + $scores['header'] + $scores['query'];			
+			$matching_scores[$index_key] = $score;
 			
 		}
 		
-		// Temporarily take the first match
+		// Take the highest scored item
 		if ( ! $matching_scores)
 		{
 			return FALSE;
 		}
+		arsort($matching_scores);
 		reset($matching_scores);
 		$matched_request = $request_index[key($matching_scores)];
 				
@@ -239,6 +251,14 @@ class Mimic_Request_Store
 		return $matched_request;
 	}
 	
+	/**
+	 * Allocates a match score for the request method
+	 * 
+	 * @param string $request_method The method from the request
+	 * @param array $scores The current array of scores for this criteria
+	 * @param string $criteria_method The method from the index entry
+	 * @return boolean 
+	 */
 	protected function _score_match_method($request_method, & $scores, $criteria_method)
 	{
 		if ($request_method == $criteria_method)
@@ -261,6 +281,16 @@ class Mimic_Request_Store
 		return TRUE;
 	}
 	
+	/**
+	 * Allocates a match score for the request header/query array, including
+	 * allowing for Mimic_Request_Wildcard_Require values.
+	 * 
+	 * @param array $request_array	The header/query array from the request
+	 * @param array $scores	The current array of scores for this criteria
+	 * @param array $criteria_array The header/query array from the index entry
+	 * @param string $type query|header
+	 * @return boolean 
+	 */
 	protected function _score_match_array($request_array, & $scores, $criteria_array, $type)
 	{
 		$score = 0;
