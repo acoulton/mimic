@@ -205,8 +205,8 @@ class Mimic_Request_Store
 	}
 	
 	/**
-	 * Searches within a request index file to identify the most specific match
-	 * for the passed in request. Returns an array of request/response data if 
+	 * Searches within a request index file to identify the first definition that
+	 * matches the passed in request. Returns an array of request/response data if 
 	 * found, or NULL if not.
 	 * 
 	 * @param Request $request
@@ -224,49 +224,43 @@ class Mimic_Request_Store
 		}		
 		$request_index_array = include($data_path.'request_index.php');
 		
-		// Work through the index and score the quality of matches
-		$matching_scores = array();		
-		foreach ($request_index_array as $index_key => $request_criteria)
-		{
-			$scores = array();
-			
+		// Test each definition in sequence		
+		$matched = FALSE;
+		foreach ($request_index_array as $index_key => $request_definition)
+		{		
+		
 			// Test the request method
-			if ( ! $this->_score_match_method($request->method(), $scores, 
-					$request_criteria['method']))
+			if ( ! $this->_matches_method($request->method(), $request_definition['method']))
 			{
 				continue;
 			}
 			
 			// Test the headers
-			if ( ! $this->_score_match_array((array) $request->headers(), $scores, 
-					$request_criteria['headers'], 'header'))
+			if ( ! $this->_matches_array((array) $request->headers(),
+					$request_definition['headers']))
 			{
 				continue;
 			}
 			
 			// Test the query params
-			if ( ! $this->_score_match_array((array) $request->query(), $scores, 
-					$request_criteria['query'], 'query'))
+			if ( ! $this->_matches_array((array) $request->query(), 
+					$request_definition['query']))
 			{
 				continue;
 			}
 			
-			// Combine the scores to give an overall value
-			// Request method always trumps everything else, header and query are equal
-			$score = (1000 * $scores['method']) + $scores['header'] + $scores['query'];			
-			$matching_scores[$index_key] = $score;
-			
+			// As soon as a match is found, break
+			$matched = TRUE;
+			break;
 		}
 		
-		// Take the highest scored item
-		if ( ! $matching_scores)
+		if ( ! $matched)
 		{
 			return FALSE;
 		}
-		arsort($matching_scores);
-		reset($matching_scores);
-		$matched_index = key($matching_scores);
-		$matched_request = $request_index_array[$matched_index];
+
+		$matched_index = $index_key;
+		$matched_request = $request_definition;
 				
 		// Make a full path to the body file
 		if (isset($matched_request['response']['body_file']))
@@ -277,33 +271,30 @@ class Mimic_Request_Store
 	}
 	
 	/**
-	 * Allocates a match score for the request method
+	 * Tests if the method matches a request definition
 	 * 
 	 * @param string $request_method The method from the request
-	 * @param array $scores The current array of scores for this criteria
 	 * @param string $criteria_method The method from the index entry
 	 * @return boolean 
 	 */
-	protected function _score_match_method($request_method, & $scores, $criteria_method)
+	protected function _matches_method($request_method, $criteria_method)
 	{
 		if ($request_method == $criteria_method)
 		{
-			$scores['method'] = 3;
+			return TRUE;
 		}
 		elseif (($request_method == 'HEAD') AND ($criteria_method == 'GET'))
 		{
-			$scores['method'] = 2;
+			return TRUE;
 		}
 		elseif ($criteria_method == '*')
 		{
-			$scores['method'] = 1;
+			return TRUE;
 		}
 		else
 		{
 			return FALSE;			
-		}
-		
-		return TRUE;
+		}				
 	}
 	
 	/**
@@ -311,15 +302,12 @@ class Mimic_Request_Store
 	 * allowing for Mimic_Request_Wildcard_Require values.
 	 * 
 	 * @param array $request_array	The header/query array from the request
-	 * @param array $scores	The current array of scores for this criteria
-	 * @param array $criteria_array The header/query array from the index entry
-	 * @param string $type query|header
+	 * @param array $criteria_array The header/query array from the index entry	 
 	 * @return boolean 
 	 */
-	protected function _score_match_array($request_array, & $scores, $criteria_array, $type)
+	protected function _matches_array($request_array, $criteria_array)
 	{
-		$score = 0;
-		
+	
 		// Verify that all required keys are present with the correct values
 		foreach ($criteria_array as $criteria_key => $criteria_value)
 		{
@@ -332,12 +320,14 @@ class Mimic_Request_Store
 			if ($request_array[$criteria_key] === $criteria_value)
 			{
 				// It matches
-				$score += 2;
 			}
 			elseif ($criteria_value instanceof Mimic_Request_Wildcard_Require)
 			{
-				// It matches less well
-				$score += 1;
+				// It matches a wildcard
+			}
+			else
+			{
+				return FALSE;
 			}
 			
 			// Remove from the request array
@@ -350,8 +340,6 @@ class Mimic_Request_Store
 			return FALSE;
 		}
 		
-		// Set the score
-		$scores[$type]	= $score;	
 		return TRUE;
 	}
 	

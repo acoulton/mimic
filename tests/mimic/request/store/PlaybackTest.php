@@ -289,8 +289,8 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 					'headers' => array('x-mimic-id'=>4),
 					'body_file' => null)),
 			array(
-				// Should match anything with a page query
-				'method' => '*',
+				// Should match GET with a page query
+				'method' => 'GET',
 				'headers' => array(),
 				'query' => array('page'=>'1'),
 				'response' => array(
@@ -298,22 +298,13 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 					'headers' => array('x-mimic-id'=>5),
 					'body_file' => null)),
 			array(
-				// Should match GET with a page query
-				'method' => 'GET',
+				// Should match anything with a page query
+				'method' => '*',
 				'headers' => array(),
 				'query' => array('page'=>'1'),
 				'response' => array(
 					'status' => '201',
 					'headers' => array('x-mimic-id'=>6),
-					'body_file' => null)),
-			array(
-				// Should match GET with a page query and any authorization header
-				'method' => 'GET',
-				'headers' => array('authorization'=>new Mimic_Request_Wildcard_Require),
-				'query' => array('page'=>'1'),
-				'response' => array(
-					'status' => '201',
-					'headers' => array('x-mimic-id'=>7),
 					'body_file' => null)),
 			array(
 				// Should match GET with a page query and specific authorization header
@@ -322,12 +313,21 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 				'query' => array('page'=>'1'),
 				'response' => array(
 					'status' => '201',
+					'headers' => array('x-mimic-id'=>7),
+					'body_file' => null)),
+			array(
+				// Should match GET with a page query and any authorization header
+				'method' => 'GET',
+				'headers' => array('authorization'=>new Mimic_Request_Wildcard_Require),
+				'query' => array('page'=>'1'),
+				'response' => array(
+					'status' => '201',
 					'headers' => array('x-mimic-id'=>8),
 					'body_file' => null)),
 		));
 	}
 	
-	public function provider_should_match_most_specific_entry_in_index_by_method()
+	public function provider_should_match_first_entry_in_index_by_method()
 	{
 		return array(
 			// Method, Query, Headers, Expect_Response_ID
@@ -337,28 +337,26 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 			array('POST', array('filter'=>'bar'), array(), null),
 			array('GET', array(), array('X-Requested-With'=>'ajax'), 3),
 			array('GET', array('filter'=>'bar'), array('X-Requested-With'=>'ajax'), 4),
-			array('PUT', array('page'=>'1'), array(), 5),
-			array('POST', array('page'=>'1'), array(), 5),			
-			array('GET', array('page'=>'1'), array(), 6),			
-			array('GET', array('page'=>'1'), array('Authorization'=>'token foo'), 7),
-			array('GET', array('page'=>'1'), array('Authorization'=>'token secured'), 8),
+			array('PUT', array('page'=>'1'), array(), 6),
+			array('POST', array('page'=>'1'), array(), 6),			
+			array('GET', array('page'=>'1'), array(), 5),			
+			array('GET', array('page'=>'1'), array('Authorization'=>'token foo'), 8),
+			array('GET', array('page'=>'1'), array('Authorization'=>'token secured'), 7),
 		);
 	}
 	
 	/**
 	 * @depends test_should_match_ignoring_wildcard_query_params
 	 * @depends test_should_match_ignoring_wildcard_header_keys
-	 * // Not implemented : depends test_should_match_ignoring_extra_query_params
-	 * // Not implemented : depends test_should_match_ignoring_extra_header_keys	 
 	 * @depends test_should_support_wildcard_for_request_method
-	 * @dataProvider provider_should_match_most_specific_entry_in_index_by_method
+	 * @dataProvider provider_should_match_first_entry_in_index_by_method
 	 * 
 	 * @param string $method  The request method to use
 	 * @param array  $query   Query parameters
 	 * @param array  $headers Header keys
 	 * @param int    $expect_response_id The ID of the response to expect
 	 */
-	public function test_should_match_most_specific_entry_in_index_by_method($method, $query, $headers, $expect_response_id)
+	public function test_should_match_first_entry_in_index_by_method($method, $query, $headers, $expect_response_id)
 	{
 		$this->_create_multiple_index();
 		$store = new Mimic_Request_Store($this->_mimic);
