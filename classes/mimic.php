@@ -37,6 +37,11 @@ class Mimic
 	protected $_external_client = null;
 	
 	/**
+	 * @var boolean Whether to add debugging headers to matched response
+	 */
+	protected $_debug_headers = null;
+	
+	/**
 	 * @var array The history of requests (with responses) that have been made
 	 */
 	protected $_request_stack = array();
@@ -184,6 +189,19 @@ class Mimic
 	public function enable_updating($enable = null)
 	{
 		return $this->_getter_setter('_enable_updating', $enable);
+	}
+	
+	/**
+	 * Getter/Setter for whether to add debug headers to matched responses
+	 * If called with no parameters, returns the current setting.
+	 * 
+	 * @param boolean $debug
+	 * @return Mimic (If used as setter)
+	 * @return boolean (If used as getter)
+	 */	
+	public function debug_headers($debug = null)
+	{
+		return $this->_getter_setter('_debug_headers', $debug);
 	}
 	
 	/**

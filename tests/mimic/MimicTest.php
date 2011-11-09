@@ -34,7 +34,8 @@ class Mimic_MimicTest extends Unittest_TestCase {
 					'enable_recording' => false,
 					'enable_updating' => false,
 					'active_mime' => 'default_config',
-					'external_client' => null
+					'external_client' => null,
+					'debug_headers' => false
 					)));
 		Kohana::$config = $config;
 	}
@@ -119,7 +120,8 @@ class Mimic_MimicTest extends Unittest_TestCase {
 			array('base_path'),
 			array('enable_recording'),
 			array('enable_updating'),
-			array('external_client')
+			array('external_client'),
+			array('debug_headers')
 		);
 	}
 	

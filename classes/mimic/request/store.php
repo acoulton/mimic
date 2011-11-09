@@ -36,7 +36,7 @@ class Mimic_Request_Store
 	 */
 	public function load(Request $request)
 	{
-		$request_data = $this->_search_index($request);
+		$request_data = $this->_search_index($request, $request_index_array, $matched_index, $index_file);
 		
 		if ($request_data)
 		{
@@ -47,6 +47,14 @@ class Mimic_Request_Store
 			if ($body = $request_data['response']['body_file'])
 			{
 				$response->body(file_get_contents($body));
+			}
+			
+			// Add debug headers if required
+			if ($this->_mimic->debug_headers())
+			{
+				$response->headers('X-Mimic-IndexFile', $index_file);
+				$response->headers('X-Mimic-DefinitionCount', count($request_index_array));
+				$response->headers('X-Mimic-MatchedIndex', $matched_index);
 			}
 			
 			return $response;
@@ -212,17 +220,19 @@ class Mimic_Request_Store
 	 * @param Request $request
 	 * @param array $request_index_array Passed by reference and returns the full index array
 	 * @param integer $matched_index Passed by reference and returns index of the matched entry
+	 * @param string $index_file Full path and name of the index file
 	 * @return array 
 	 */
-	protected function _search_index($request, & $request_index_array = array(), & $matched_index = null)
+	protected function _search_index($request, & $request_index_array = array(), & $matched_index = null, & $index_file = null)
 	{
 		// Check the index file exists and load it into memory
 		$data_path = $this->_request_store_path($request);
-		if ( ! file_exists($data_path.'request_index.php'))
+		$index_file = $data_path.'request_index.php';
+		if ( ! file_exists($index_file))
 		{
 			return FALSE;
 		}		
-		$request_index_array = include($data_path.'request_index.php');
+		$request_index_array = include($index_file);
 		
 		// Test each definition in sequence		
 		$matched = FALSE;

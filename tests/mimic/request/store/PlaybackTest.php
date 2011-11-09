@@ -374,4 +374,48 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		}		
 	}
 	
+		
+	public function provider_should_add_debug_headers_if_requested()
+	{
+		return array(
+			array(TRUE),
+			array(FALSE)
+		);
+	}
+	
+	/**
+	 * @dataProvider provider_should_add_debug_headers_if_requested
+	 * @param boolean $debug_headers 
+	 */
+	public function test_should_add_debug_headers_if_requested($debug_headers)
+	{
+		// Setup the test data and mocks
+		$this->_create_multiple_index();
+		$this->_mimic->expects($this->once())
+				->method('debug_headers')
+				->with(NULL)
+				->will($this->returnValue($debug_headers));
+		
+		// Setup and match a request
+		$request = $this->_request('GET', array('filter'=>'bar'), array('X-Requested-With'=>'ajax'));
+		$store = new Mimic_Request_Store($this->_mimic);
+		$response = $store->load($request);
+		$headers = (array) $response->headers();
+		
+		// Verify that debug headers are (not) present
+		if ($debug_headers)
+		{
+			$this->assertEquals($headers['x-mimic-indexfile'], vfsStream::url('mimes/http/foo.bar.com/test/request_index.php'));
+			$this->assertEquals($headers['x-mimic-definitioncount'], 8);
+			$this->assertEquals($headers['x-mimic-matchedindex'], 3);
+		}
+		else
+		{
+			$this->assertArrayNotHasKey('x-mimic-indexfile', $headers);
+			$this->assertArrayNotHasKey('x-mimic-definitioncount', $headers);
+			$this->assertArrayNotHasKey('x-mimic-matchedindex', $headers);
+		}
+	}
+
+	
 }
