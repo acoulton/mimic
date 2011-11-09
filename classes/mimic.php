@@ -27,9 +27,9 @@ class Mimic
 	protected $_enable_updating = NULL;
 	
 	/**
-	 * @var string The current mime (scenario) to use
+	 * @var string The current scenario to use
 	 */
-	protected $_active_mime = NULL;
+	protected $_active_scenario = NULL;
 	
 	/**
 	 * @var string The current external client to use
@@ -153,7 +153,7 @@ class Mimic
 	}
 	
 	/**
-	 * Getter/Setter for the base_path where mime scenario files will be stored.
+	 * Getter/Setter for the base_path where scenario files will be stored.
 	 * If called with no parameters, returns the current setting.
 	 * 
 	 * @param string $path
@@ -205,38 +205,37 @@ class Mimic
 	}
 	
 	/**
-	 * Loads a new mime scenario - used to handle testing multiple responses from the 
+	 * Loads a new scenario - used to handle testing multiple responses from the 
 	 * same request - for example if the destination server is down, or to 
 	 * deal with authenticated vs anonymous access.
 	 * 
-	 * @param string $mime_name
+	 * @param string $scenario_name
 	 * @return Mimic 
 	 */
-	public function load_mime($mime_name)
+	public function load_scenario($scenario_name)
 	{
-		$this->_active_mime = $mime_name;
+		$this->_active_scenario = $scenario_name;
 		return $this;
 	}
 	
 	/**
-	 * Returns the currently active mime scenario
+	 * Returns the currently active scenario
 	 * 
 	 * @return type 
 	 */
-	public function get_active_mime()
+	public function get_active_scenario()
 	{
-		return $this->_active_mime;
+		return $this->_active_scenario;
 	}
 	
 	/**
-	 * Returns the base path for request/response files in the current mime
-	 * scenario.
+	 * Returns the base path for request/response files in the current scenario.
 	 * 
 	 * @return string
 	 */
-	public function get_mime_path()
+	public function get_scenario_path()
 	{
-		return $this->_base_path.DIRECTORY_SEPARATOR.$this->_active_mime.DIRECTORY_SEPARATOR;
+		return $this->_base_path.DIRECTORY_SEPARATOR.$this->_active_scenario.DIRECTORY_SEPARATOR;
 	}
 	
 	/**

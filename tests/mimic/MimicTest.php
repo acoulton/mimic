@@ -33,7 +33,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 					'base_path' => '/foo/config_setting',
 					'enable_recording' => false,
 					'enable_updating' => false,
-					'active_mime' => 'default_config',
+					'active_scenario' => 'default_config',
 					'external_client' => null,
 					'debug_headers' => false
 					)));
@@ -56,7 +56,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	{		
 		$mimic = new Mimic;
 		$this->assertAttributeEquals('/foo/config_setting', '_base_path', $mimic);
-		$this->assertAttributeEquals('default_config', '_active_mime', $mimic);
+		$this->assertAttributeEquals('default_config', '_active_scenario', $mimic);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 		$mimic =new Mimic(array('base_path'=>'/foo/local_setting')); 
 		
 		$this->assertAttributeEquals('/foo/local_setting', '_base_path', $mimic);			
-		$this->assertAttributeEquals('default_config', '_active_mime', $mimic);
+		$this->assertAttributeEquals('default_config', '_active_scenario', $mimic);
 	}		
 	
 	public function provider_instance_should_implement_singleton_with_reset()
@@ -101,7 +101,7 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	{
 		$mimic = Mimic::instance(array('base_path'=>'/foo/singleton/path'), TRUE);
 		$this->assertAttributeEquals('/foo/singleton/path', '_base_path', $mimic);
-		$this->assertAttributeEquals('default_config', '_active_mime', $mimic);	
+		$this->assertAttributeEquals('default_config', '_active_scenario', $mimic);	
 	}
 	
 	/**
@@ -198,24 +198,24 @@ class Mimic_MimicTest extends Unittest_TestCase {
 	/**
 	 * @depends test_constructor_should_get_properties_from_config
 	 */
-	public function test_should_get_and_set_active_mime()
+	public function test_should_get_and_set_active_scenario()
 	{
 		$mimic = new Mimic();
-		$this->assertEquals('default_config', $mimic->get_active_mime());
+		$this->assertEquals('default_config', $mimic->get_active_scenario());
 		
-		$mimic->load_mime('another_mime');
+		$mimic->load_scenario('another_test');
 		
-		$this->assertEquals('another_mime', $mimic->get_active_mime());
+		$this->assertEquals('another_test', $mimic->get_active_scenario());
 	}
 	
 	/**
 	 * @depends test_constructor_should_get_properties_from_config	 
 	 */
-	public function test_should_return_mime_path()
+	public function test_should_return_scenario_path()
 	{
 		$mimic = new Mimic();
 		
-		$this->assertEquals('/foo/config_setting'.DIRECTORY_SEPARATOR.'default_config'.DIRECTORY_SEPARATOR, $mimic->get_mime_path());
+		$this->assertEquals('/foo/config_setting'.DIRECTORY_SEPARATOR.'default_config'.DIRECTORY_SEPARATOR, $mimic->get_scenario_path());
 	}
 	
 	public function test_should_count_requests_made()

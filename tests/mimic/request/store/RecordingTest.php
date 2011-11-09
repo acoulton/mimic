@@ -53,7 +53,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 					'base_path' => '/foo/config_setting',
 					'enable_recording' => false,
 					'enable_updating' => false,
-					'active_mime' => 'default_config',
+					'active_scenario' => 'default_config',
 					'external_client' => null,
 					'response_formatters' => array(
 						'application/json' => 'Mock_Mimic_Response_Formatter_JSON',
@@ -83,14 +83,14 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 		parent::setUp();
 		
 		// Setup a mock file system
-		$this->_file_system = vfsStream::setup('mimes');
+		$this->_file_system = vfsStream::setup('scenarios');
 		
 		// Setup the mock mimic
 		$this->_mimic = $this->getMock('Mimic', array(), 
 				array(), '', FALSE);
 		$this->_mimic->expects($this->any())
-				->method('get_mime_path')
-				->will($this->returnValue(vfsStream::url('mimes/')));
+				->method('get_scenario_path')
+				->will($this->returnValue(vfsStream::url('scenarios/')));
 	}
 	
 	/**
@@ -141,7 +141,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 	 */
 	protected function _get_recorded_index($index_file = 'http/ingenerator.com/data/request_index.php')
 	{
-		$index = require(vfsStream::url('mimes/'.$index_file));		
+		$index = require(vfsStream::url('scenarios/'.$index_file));		
 		return $index;
 	}
 	
@@ -405,7 +405,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 					'headers' => array('x-resp'=>'foo'),
 					'body_file' => null
 				)));
-		$request_store_path = vfsStream::url('mimes/http/ingenerator.com/data/');		
+		$request_store_path = vfsStream::url('scenarios/http/ingenerator.com/data/');		
 		mkdir($request_store_path, 0700, true);
 		
 		file_put_contents($request_store_path.'request_index.php',

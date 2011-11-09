@@ -163,8 +163,8 @@ class Mimic_Request_Store
 			$path .= '/';
 		}
 		
-		// Combine with the current mimic mime_path to get a full path
-		$path = $this->_mimic->get_mime_path().$path;
+		// Combine with the current mimic scenario_path to get a full path
+		$path = $this->_mimic->get_scenario_path().$path;
 		
 		// Create if required
 		if ($create AND ( ! file_exists($path)))

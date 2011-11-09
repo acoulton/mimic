@@ -42,20 +42,20 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		parent::setUp();
 		
 		// Setup a mock file system
-		$this->_file_system = vfsStream::setup('mimes');
+		$this->_file_system = vfsStream::setup('scenarios');
 		
 		// Setup the mock mimic
 		$this->_mimic = $this->getMock('Mimic', array(), 
 				array(), '', FALSE);
 		$this->_mimic->expects($this->any())
-				->method('get_mime_path')
-				->will($this->returnValue(vfsStream::url('mimes/')));
+				->method('get_scenario_path')
+				->will($this->returnValue(vfsStream::url('scenarios/')));
 	}
 	
 	
 	protected function _create_index_file($requests)
 	{
-		$request_store_path = vfsStream::url('mimes/http/foo.bar.com/test/');
+		$request_store_path = vfsStream::url('scenarios/http/foo.bar.com/test/');
 		
 		mkdir($request_store_path, 0700, true);
 		
@@ -405,7 +405,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 		// Verify that debug headers are (not) present
 		if ($debug_headers)
 		{
-			$this->assertEquals($headers['x-mimic-indexfile'], vfsStream::url('mimes/http/foo.bar.com/test/request_index.php'));
+			$this->assertEquals($headers['x-mimic-indexfile'], vfsStream::url('scenarios/http/foo.bar.com/test/request_index.php'));
 			$this->assertEquals($headers['x-mimic-definitioncount'], 8);
 			$this->assertEquals($headers['x-mimic-matchedindex'], 3);
 		}

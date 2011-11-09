@@ -3,7 +3,7 @@ return array(
 	'base_path' => APPPATH.'tests/test_data/mimic/',
 	'enable_recording' => FALSE,
 	'enable_updating' => FALSE,
-	'active_mime' => 'default',
+	'active_scenario' => 'default',
 	'external_client' => NULL,
 	'response_formatters' => array(
 		// HTML
