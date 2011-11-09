@@ -7,11 +7,7 @@
 require_once 'vfsStream/vfsStream.php';
 
 /**
- * Unit tests for the generic Response Formatter
- *
- * @group mimic
- * @group mimic.formatter
- * @group mimic.formatter.generic
+ * Base unit tests for all Mimic_Response_Formatter classes
  *
  * @package    Mimic
  * @category   Tests
@@ -19,12 +15,15 @@ require_once 'vfsStream/vfsStream.php';
  * @copyright  (c) 2011 Ingenerator
  * @license    http://kohanaframework.org/license
  */
-class Mimic_Response_FormatterTest extends Unittest_TestCase {
+abstract class Mimic_Response_FormatterBaseTest extends Unittest_TestCase {
+	
+	protected $_formatter_class_name = NULL;
+	protected $_expect_extension = NULL;
 
 	public function test_should_create_file_and_return_name()
 	{
 		$file_system = vfsStream::setup('responses');	
-		$formatter = new Mimic_Response_Formatter_Foo;
+		$formatter = new $this->_formatter_class_name;
 		$path = vfsStream::url('responses/');
 		
 		$file_name = $formatter->put_contents($path, 'foo_test', 
@@ -54,12 +53,12 @@ class Mimic_Response_FormatterTest extends Unittest_TestCase {
 	 */
 	public function test_should_apply_suitable_file_extension($test_data)
 	{
+		if ($this->_expect_extension === NULL)
+		{
+			$this->markTestIncomplete(get_class($this).' should define a value for $_expect_extension');
+			return;
+		}
 		extract($test_data);
-		$this->assertStringEndsWith('.foo', $file_name);
+		$this->assertStringEndsWith($this->_expect_extension, $file_name);
 	}	
-}
-
-class Mimic_Response_Formatter_Foo extends Mimic_Response_Formatter
-{
-	protected $_extension = '.foo';
 }
