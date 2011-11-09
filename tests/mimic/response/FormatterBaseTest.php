@@ -19,28 +19,34 @@ abstract class Mimic_Response_FormatterBaseTest extends Unittest_TestCase {
 	
 	protected $_formatter_class_name = NULL;
 	protected $_expect_extension = NULL;
-
-	public function test_should_create_file_and_return_name()
+	protected $_file_system = NULL;	
+	
+	public function setUp()
 	{
-		$file_system = vfsStream::setup('responses');	
+		parent::setUp();
+		$this->_file_system = vfsStream::setup('responses');
+	}
+
+	public function test_should_create_file_with_arbitrary_content_and_return_name()
+	{		
 		$formatter = new $this->_formatter_class_name;
 		$path = vfsStream::url('responses/');
 		
 		$file_name = $formatter->put_contents($path, 'foo_test', 
 				'test-foo-content');		
 		
-		$this->assertTrue($file_system->hasChild($file_name));
+		$this->assertTrue($this->_file_system->hasChild($file_name));
 		
 		return array(
-			'file_system' => $file_system,
+			'file_system' => $this->_file_system,
 			'file_name' => $file_name
 		);
 	}
 	
 	/**
-	 * @depends test_should_create_file_and_return_name
+	 * @depends test_should_create_file_with_arbitrary_content_and_return_name
 	 */
-	public function test_should_store_response_body($test_data)
+	public function test_should_store_arbitrary_response_body($test_data)
 	{
 		extract($test_data);		
 		$this->assertEquals('test-foo-content', 
@@ -49,7 +55,7 @@ abstract class Mimic_Response_FormatterBaseTest extends Unittest_TestCase {
 	}
 	
 	/**
-	 * @depends test_should_create_file_and_return_name
+	 * @depends test_should_create_file_with_arbitrary_content_and_return_name
 	 */
 	public function test_should_apply_suitable_file_extension($test_data)
 	{
