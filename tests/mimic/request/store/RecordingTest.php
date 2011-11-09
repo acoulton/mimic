@@ -406,7 +406,7 @@ class Mimic_Request_Store_RecordingTest extends Unittest_TestCase {
 					'body_file' => null
 				)));
 		$request_store_path = vfsStream::url('mimes/http/ingenerator.com/data/');		
-		mkdir($request_store_path, '0700', true);
+		mkdir($request_store_path, 0700, true);
 		
 		file_put_contents($request_store_path.'request_index.php',
 				'<?php'.PHP_EOL

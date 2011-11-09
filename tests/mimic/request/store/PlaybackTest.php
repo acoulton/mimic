@@ -57,7 +57,7 @@ class Mimic_Request_Store_PlaybackTest extends Unittest_TestCase {
 	{
 		$request_store_path = vfsStream::url('mimes/http/foo.bar.com/test/');
 		
-		mkdir($request_store_path, '0700', true);
+		mkdir($request_store_path, 0700, true);
 		
 		// Store the bodies as separate files
 		foreach ($requests as $index=>$request)

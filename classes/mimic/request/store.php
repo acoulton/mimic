@@ -161,7 +161,7 @@ class Mimic_Request_Store
 		// Create if required
 		if ($create AND ( ! file_exists($path)))
 		{
-			mkdir($path, '0700', TRUE);
+			mkdir($path, 0700, TRUE);
 		}
 		
 		return $path;
