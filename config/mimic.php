@@ -1,10 +1,10 @@
 <?php
 return array(
 	'base_path' => APPPATH.'tests/test_data/mimic/',
-	'enable_recording' => false,
-	'enable_updating' => false,
+	'enable_recording' => FALSE,
+	'enable_updating' => FALSE,
 	'active_mime' => 'default',
-	'external_client' => null,
+	'external_client' => NULL,
 	'response_formatters' => array(
 		// HTML
 		'text/html' => 'Mimic_Response_Formatter_HTML',

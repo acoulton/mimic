@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Mimic_Request_Store handles saving request/response pairs to disk for future
  * use, and loading a saved response based on a given request.
@@ -215,7 +215,7 @@ class Mimic_Request_Store
 	/**
 	 * Searches within a request index file to identify the first definition that
 	 * matches the passed in request. Returns an array of request/response data if 
-	 * found, or NULL if not.
+	 * found, OR NULL if not.
 	 * 
 	 * @param Request $request
 	 * @param array $request_index_array Passed by reference and returns the full index array
@@ -223,7 +223,7 @@ class Mimic_Request_Store
 	 * @param string $index_file Full path and name of the index file
 	 * @return array 
 	 */
-	protected function _search_index($request, & $request_index_array = array(), & $matched_index = null, & $index_file = null)
+	protected function _search_index($request, & $request_index_array = array(), & $matched_index = NULL, & $index_file = NULL)
 	{
 		// Check the index file exists and load it into memory
 		$data_path = $this->_request_store_path($request);
@@ -246,14 +246,14 @@ class Mimic_Request_Store
 			}
 			
 			// Test the headers
-			if ( ! $this->_matches_array((array) $request->headers(),
+			if ( ! $this->_matches_array( (array) $request->headers(),
 					$request_definition['headers']))
 			{
 				continue;
 			}
 			
 			// Test the query params
-			if ( ! $this->_matches_array((array) $request->query(), 
+			if ( ! $this->_matches_array( (array) $request->query(), 
 					$request_definition['query']))
 			{
 				continue;

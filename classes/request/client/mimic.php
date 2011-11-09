@@ -1,7 +1,7 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * [Request_Client_External] Mimic driver handles the core functionality of mimic -
- * matching requests against existing known requests and replaying responses, or
+ * matching requests against existing known requests and replaying responses, OR
  * executing unmatched requests and recording the responses for future use.
  * 
  * @package    Mimic
@@ -16,24 +16,24 @@ class Request_Client_Mimic extends Request_Client_External
 	 * The Mimic instance where configuration data is held
 	 * @var Mimic
 	 */
-	protected $_mimic = null;
+	protected $_mimic = NULL;
 	
 	/**
 	 * The Mimic_Request_Store responsible for loading and recording requests
 	 * @var Mimic_Request_Store
 	 */
-	protected $_store = null;
+	protected $_store = NULL;
 		
 	/**
 	 * Entry point - determines whether to load a stored response, record a new 
-	 * one or throw an exception
+	 * one OR throw an exception
 	 *
-	 * @param   Request   request to send
+	 * @param   Request $request request to send
 	 * @return  Response
 	 */
 	public function _send_message(Request $request)
 	{
-		// Create or retrieve the Mimic and Mimic_Request_Store instances
+		// Create OR retrieve the Mimic and Mimic_Request_Store instances
 		$mimic = $this->mimic();
 		$store = $this->store();
 		
@@ -78,24 +78,24 @@ class Request_Client_Mimic extends Request_Client_External
 	}
 	
 	/**
-	 * Sets or gets a [Mimic] instance - provided to allow injection
+	 * Sets OR gets a [Mimic] instance - provided to allow injection
 	 * of a [Mimic] - primarily for testing purposes.
 	 * 
 	 * @param Mimic $mimic
 	 * @return Mimic
 	 */
-	public function mimic(Mimic $mimic = null)
+	public function mimic(Mimic $mimic = NULL)
 	{
 		// Explicitly set a mimic if called as setter
-		if ($mimic !== null)
+		if ($mimic !== NULL)
 		{
 			$this->_mimic = $mimic;
-			$this->_store = null;
+			$this->_store = NULL;
 			return $mimic;
 		}
 		
 		// Get the singleton mimic if required
-		if ($this->_mimic === null)
+		if ($this->_mimic === NULL)
 		{
 			$this->_mimic = Mimic::instance();
 		}
@@ -103,23 +103,23 @@ class Request_Client_Mimic extends Request_Client_External
 	}
 	
 	/**
-	 * Sets or gets a [Mimic_Request_Store] instance - provided to allow injection
+	 * Sets OR gets a [Mimic_Request_Store] instance - provided to allow injection
 	 * of a [Mimic_Request_Store] - primarily for testing purposes.
 	 * 
 	 * @param Mimic_Request_Store $store
 	 * @return Mimic_Request_Store 
 	 */
-	public function store(Mimic_Request_Store $store = null)
+	public function store(Mimic_Request_Store $store = NULL)
 	{		
 		// Explicitly set a mimic if called as setter
-		if ($store !== null)
+		if ($store !== NULL)
 		{
 			$this->_store = $store;
 			return $store;
 		}
 		
 		// Get a new instance if required
-		if ($this->_store === null)
+		if ($this->_store === NULL)
 		{
 			$this->_store = new Mimic_Request_Store($this->mimic());
 		}

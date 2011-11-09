@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Mimic_Response_Formatter classes store response bodies to disk according
  * to the content-type of the response.

@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Mimic records and replays interactions with an external web service, allowing
  * rapid development of isolated, idempotent, unit and functional tests for
@@ -14,32 +14,32 @@ class Mimic
 	/**
 	 * @var string The base path to use for storing request/response files
 	 */
-	protected $_base_path = null;
+	protected $_base_path = NULL;
 	
 	/**
 	 * @var boolean Whether recording is enabled
 	 */
-	protected $_enable_recording = null;
+	protected $_enable_recording = NULL;
 	
 	/**
 	 * @var boolean Whether updating is enabled
 	 */
-	protected $_enable_updating = null;
+	protected $_enable_updating = NULL;
 	
 	/**
 	 * @var string The current mime (scenario) to use
 	 */
-	protected $_active_mime = null;
+	protected $_active_mime = NULL;
 	
 	/**
 	 * @var string The current external client to use
 	 */
-	protected $_external_client = null;
+	protected $_external_client = NULL;
 	
 	/**
 	 * @var boolean Whether to add debugging headers to matched response
 	 */
-	protected $_debug_headers = null;
+	protected $_debug_headers = NULL;
 	
 	/**
 	 * @var array The history of requests (with responses) that have been made
@@ -49,7 +49,7 @@ class Mimic
 	/**	 
 	 * @var string The previously active external request client
 	 */
-	protected static $_previous_external_client = null;
+	protected static $_previous_external_client = NULL;
 	
 	/**
 	 * Provides a singleton implementation for Mimic. The singleton can be reset by
@@ -79,9 +79,9 @@ class Mimic
 	 * @param boolean $reset Whether to reset the current singleton
 	 * @return Mimic 
 	 */
-	public static function instance($config = array(), $reset = null)
+	public static function instance($config = array(), $reset = NULL)
 	{
-		static $instance = null;
+		static $instance = NULL;
 
 		if ($reset OR ( ! $instance))
 		{
@@ -118,7 +118,7 @@ class Mimic
 	public function __construct($config = array())
 	{
 		// Merge configuration with passed params, and set properties
-		$config = Arr::merge((array)Kohana::$config->load('mimic'), $config);
+		$config = Arr::merge( (array) Kohana::$config->load('mimic'), $config);
 		foreach ($config as $property => $value)
 		{
 			$property = '_'.$property;
@@ -142,7 +142,7 @@ class Mimic
 	protected function _getter_setter($property,$value)
 	{
 		// Use as a getter
-		if ($value === null)
+		if ($value === NULL)
 		{
 			return $this->$property;
 		}
@@ -160,7 +160,7 @@ class Mimic
 	 * @return Mimic (If used as setter)
 	 * @return string (If used as getter)
 	 */
-	public function base_path($path = null)
+	public function base_path($path = NULL)
 	{
 		return $this->_getter_setter('_base_path', $path);
 	}
@@ -173,7 +173,7 @@ class Mimic
 	 * @return Mimic (If used as setter)
 	 * @return string (If used as getter)
 	 */
-	public function enable_recording($enable = null)
+	public function enable_recording($enable = NULL)
 	{
 		return $this->_getter_setter('_enable_recording', $enable);
 	}
@@ -186,7 +186,7 @@ class Mimic
 	 * @return Mimic (If used as setter)
 	 * @return string (If used as getter)
 	 */	
-	public function enable_updating($enable = null)
+	public function enable_updating($enable = NULL)
 	{
 		return $this->_getter_setter('_enable_updating', $enable);
 	}
@@ -199,7 +199,7 @@ class Mimic
 	 * @return Mimic (If used as setter)
 	 * @return boolean (If used as getter)
 	 */	
-	public function debug_headers($debug = null)
+	public function debug_headers($debug = NULL)
 	{
 		return $this->_getter_setter('_debug_headers', $debug);
 	}
@@ -244,17 +244,17 @@ class Mimic
 	 * If called with no parameters, returns the current setting.
 	 * 
 	 * If the external_client property of this instance (from constructor or 
-	 * config) is null, will use the value of Mimic::previous_external_client()
+	 * config) is NULL, will use the value of Mimic::previous_external_client()
 	 * 
 	 * @param string $client
 	 * @return Mimic (If used as setter)
 	 * @return string (If used as getter)
 	 */	
-	public function external_client($client = null)
+	public function external_client($client = NULL)
 	{
-		if ($client === null)
+		if ($client === NULL)
 		{
-			if ($this->_external_client === null)
+			if ($this->_external_client === NULL)
 			{
 				return self::previous_external_client();
 			}
@@ -293,10 +293,10 @@ class Mimic
 	 * @param integer $id The position of the request to get
 	 * @return Request
 	 */
-	public function request_history($id = null)
+	public function request_history($id = NULL)
 	{
 		// With no parameter, return the full history
-		if ($id === null)
+		if ($id === NULL)
 		{
 			return $this->_request_stack;
 		}
