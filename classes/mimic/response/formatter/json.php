@@ -33,35 +33,36 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 	/**
 	 * Escapes a JSON value
 	 * @author bohwaz
-	 * @see http://www.php.net/manual/en/function.json-encode.php#102091
+	 * @link http://www.php.net/manual/en/function.json-encode.php#102091
 	 * @param string $str The value to escape
 	 * @return string
 	 */
 	protected function _json_escape($str)
 	{
-		return preg_replace("!([\b\t\n\r\f\"\\'])!", "\\\\\\1", $str);
+		$replace = "\\\\$1";
+		return preg_replace('!([\b\t\n\r\f"\\\'])!', $replace, $str);
 	}
 
 	/**
 	 * Replacement for json_encode to implement pretty formatting of data prior to
 	 * PHP 5.4 adoption
 	 * @author bohwaz
-	 * @see http://www.php.net/manual/en/function.json-encode.php#102091
+	 * @link http://www.php.net/manual/en/function.json-encode.php#102091
 	 * @param mixed $in Data to encode
 	 * @param int $indent Depth of indenting to use
 	 * @param boolean $from_array Whether or not from an array
 	 * @return string
 	 */
-	public function json_readable_encode($in, $indent = 0, $from_array = false)
+	public function json_readable_encode($in, $indent = 0, $from_array = FALSE)
 	{
 		$out = '';
 
 		foreach ($in as $key => $value)
 		{
 			$out .= str_repeat("\t", $indent + 1);
-			$out .= "\"".$this->_json_escape((string) $key)."\": ";
+			$out .= "\"".$this->_json_escape( (string) $key)."\": ";
 
-			if (is_object($value) || is_array($value))
+			if (is_object($value) OR is_array($value))
 			{
 				$out .= "\n";
 				$out .= $this->json_readable_encode($value, $indent + 1);
@@ -86,14 +87,13 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 			$out .= ",\n";
 		}
 
-		if (!empty($out))
+		if ( ! empty($out))
 		{
 			$out = substr($out, 0, -2);
 		}
 
 		$out = str_repeat("\t", $indent)."{\n".$out;
-		$out .= "\n".str_repeat("\t", $indent)."}";
-
+		$out .= "\n".str_repeat("\t", $indent)."}";		
 		return $out;
 	}
 
