@@ -2,11 +2,11 @@
 /**
  * Mimic_Request_Store handles saving request/response pairs to disk for future
  * use, and loading a saved response based on a given request.
- * 
- * @package    Mimic 
+ *
+ * @package    Mimic
  * @author     Andrew Coulton
  * @copyright  (c) 2011 Ingenerator
- * @license    http://kohanaframework.org/license 
+ * @license    http://kohanaframework.org/license
  */
 class Mimic_Request_Store
 {

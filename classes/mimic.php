@@ -3,8 +3,8 @@
  * Mimic records and replays interactions with an external web service, allowing
  * rapid development of isolated, idempotent, unit and functional tests for
  * application code.
- * 
- * @package    Mimic 
+ *
+ * @package    Mimic
  * @author     Andrew Coulton
  * @copyright  (c) 2011 Ingenerator
  * @license    http://kohanaframework.org/license 
