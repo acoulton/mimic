@@ -11,10 +11,10 @@
  * @license    http://kohanaframework.org/license
  */
 class Mimic_Request_Wildcard_Require {
-	
+
 	/**
 	 * Does nothing - required to allow var_export to create instances during testing
-	 * @return Mimic_Request_Wildcard_Require 
+	 * @return Mimic_Request_Wildcard_Require
 	 */
 	public static function __set_state()
 	{

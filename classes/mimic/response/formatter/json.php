@@ -19,17 +19,17 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 	 * @param string $path
 	 * @param string $file_prefix
 	 * @param string $content
-	 * @return string 
+	 * @return string
 	 */
 	public function put_contents($path, $file_prefix, $content)
 	{
 		if ($json_content = json_decode($content))
-		{			
+		{
 			$content = $this->json_readable_encode($json_content);
 		}
 		return parent::put_contents($path, $file_prefix, $content);
 	}
-	
+
 	/**
 	 * Escapes a JSON value
 	 * @author bohwaz
@@ -93,7 +93,7 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 		}
 
 		$out = str_repeat("\t", $indent)."{\n".$out;
-		$out .= "\n".str_repeat("\t", $indent)."}";		
+		$out .= "\n".str_repeat("\t", $indent)."}";
 		return $out;
 	}
 
