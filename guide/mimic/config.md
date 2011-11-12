@@ -8,6 +8,7 @@ Key             |Default                          |Function
 ----------------|---------------------------------|--------
 base_path       | APPPATH/tests/test_data/mimic/  | Root path for storage of Mimic files
 active_scenario | default                         | [Scenario](/#scenarios) in use (sub-path for file storage)
+debug_headers   | FALSE                           | Add X-Mimic debug headers to responses to indicate where match was found?
 enable_recording| FALSE                           | Allow recording of requests that aren't matched?
 enable_updating | FALSE                           | Update matched requests by executing and storing new response?
 external_client | NULL                            | Specify an external client to use when executing requests - if NULL will use whatever is set for [Request_Client_External]::$client

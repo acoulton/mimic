@@ -5,21 +5,22 @@ return array(
 	'enable_updating' => FALSE,
 	'active_scenario' => 'default',
 	'external_client' => NULL,
+	'debug_headers' => FALSE,
 	'response_formatters' => array(
 		// HTML
 		'text/html' => 'Mimic_Response_Formatter_HTML',
-		
+
 		// Javascript and JSON
 		'application/json' => 'Mimic_Response_Formatter_JSON',
 		'application/javascript' => 'Mimic_Response_Formatter_Javascript',
 		'text/javascript' => 'Mimic_Response_Formatter_Javascript',
-		
+
 		// Common XML Content-Type headers
 		'application/xml' => 'Mimic_Response_Formatter_XML',
 		'text/xml' => 'Mimic_Response_Formatter_XML',
 		'application/atom+xml' => 'Mimic_Response_Formatter_XML',
 		'application/rss+xml' => 'Mimic_Response_Formatter_XML',
-		
-		// Generic fallback formatter	
+
+		// Generic fallback formatter
 		'*' => 'Mimic_Response_Formatter')
 	);
