@@ -22,7 +22,7 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 	 * @return string
 	 */
 	public function put_contents($path, $file_prefix, $content)
-	{
+	{		
 		if ($json_content = json_decode($content))
 		{
 			$content = $this->json_readable_encode($json_content);
@@ -31,21 +31,12 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 	}
 
 	/**
-	 * Escapes a JSON value
-	 * @author bohwaz
-	 * @link http://www.php.net/manual/en/function.json-encode.php#102091
-	 * @param string $str The value to escape
-	 * @return string
-	 */
-	protected function _json_escape($str)
-	{
-		$replace = "\\\\$1";
-		return preg_replace('!([\b\t\n\r\f"\\\'])!', $replace, $str);
-	}
-
-	/**
 	 * Replacement for json_encode to implement pretty formatting of data prior to
 	 * PHP 5.4 adoption
+	 * 
+	 * Adapted from a solution on php.net as escaping of values is more reliable with
+	 * native json_encode
+	 * 
 	 * @author bohwaz
 	 * @link http://www.php.net/manual/en/function.json-encode.php#102091
 	 * @param mixed $in Data to encode
@@ -54,34 +45,23 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 	 * @return string
 	 */
 	public function json_readable_encode($in, $indent = 0, $from_array = FALSE)
-	{
+	{		
 		$out = '';
 
 		foreach ($in as $key => $value)
 		{
 			$out .= str_repeat("\t", $indent + 1);
-			$out .= "\"".$this->_json_escape( (string) $key)."\": ";
+			$out .= json_encode((string) $key).": ";
 
 			if (is_object($value) OR is_array($value))
 			{
 				$out .= "\n";
 				$out .= $this->json_readable_encode($value, $indent + 1);
 			}
-			elseif (is_bool($value))
-			{
-				$out .= $value ? 'true' : 'false';
-			}
-			elseif (is_null($value))
-			{
-				$out .= 'null';
-			}
-			elseif (is_string($value))
-			{
-				$out .= "\"".$this->_json_escape($value)."\"";
-			}
 			else
 			{
-				$out .= $value;
+				// Don't escape forward slashes
+				$out .= str_replace('\/', '/', json_encode($value));
 			}
 
 			$out .= ",\n";
@@ -93,7 +73,7 @@ class Mimic_Response_Formatter_JSON extends Mimic_Response_Formatter
 		}
 
 		$out = str_repeat("\t", $indent)."{\n".$out;
-		$out .= "\n".str_repeat("\t", $indent)."}";
+		$out .= "\n".str_repeat("\t", $indent)."}";		
 		return $out;
 	}
 

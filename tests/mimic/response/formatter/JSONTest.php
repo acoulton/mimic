@@ -30,8 +30,22 @@ class Mimic_Response_Formatter_JSONTest extends Mimic_Response_FormatterBaseTest
 					'object' => array('string'=>'bar'),
 					'null' => NULL,
 					'bool' => TRUE,
+					
 					)
-			)			
+			),
+			array(
+				'{"newline":"line\r\n\there"}',
+				array(
+					'newline' => "line\r\n\there",
+				),
+			),
+			array(
+				'{"escaped":"\/\\\\\"\'"}',
+				array(
+					'escaped' => '/\"\'',	
+				)				
+			)
+			
 		);
 	}
 	
