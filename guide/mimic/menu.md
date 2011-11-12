@@ -1,0 +1,8 @@
+## [Mimic]()
+- [Recording](recording)
+- [Matching Requests](matching)
+- [Customising Responses](customising)
+- [Testing with Mimic](testing)
+- [Updating definitions](updating)
+- [Configuration](config)
+- [Response Formatters](formatters)
