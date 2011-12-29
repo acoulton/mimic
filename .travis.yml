@@ -6,7 +6,7 @@ php:
 env:
   - KO_SANDBOX=/home/vagrant/kohana
 
-after_install:
+before_script:
   # Install vfsStream for unit tests
   - pyrus channel-discover pear.php-tools.net
   - pyrus install pat/vfsStream-beta
