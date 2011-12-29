@@ -1,4 +1,8 @@
-# Mimic [![Build Status](https://secure.travis-ci.org/acoulton/mimic.png)](http://travis-ci.org/acoulton/mimic)
+# Mimic
+
+**[View builds]((http://travis-ci.org/acoulton/mimic) | master: ![Build status - master branch](https://secure.travis-ci.org/acoulton/mimic.png?branch=master) | 
+develop: ![Build Status - develop branch](https://secure.travis-ci.org/acoulton/mimic.png?branch=develop) | 
+overall: ![Build Status - overall](https://secure.travis-ci.org/acoulton/mimic.png)**
 
 Mimic is a module for [Kohana Framework v3.2 and up](http://kohanaframework.org)
 that allows easy mocking and testing of an application's interaction with external
