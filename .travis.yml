@@ -1,0 +1,19 @@
+# Configuration file for Travis CI test environment
+language: php
+php:
+  - 5.3
+
+env:
+  - KO_SANDBOX=/home/vagrant/kohana
+
+after_install:
+  # Install vfsStream for unit tests
+  - pyrus channel-discover pear.php-tools.net
+  - pyrus install pat/vfsStream-beta
+  - phpenv rehash
+
+  # Create a kohana environment
+  - php ./dev/ko-sandbox.php
+
+# Run the Mimic tests
+script: phpunit --bootstrap=$KO_SANDBOX/modules/unittest/bootstrap.php --group=mimic $KO_SANDBOX/modules/unittest/tests.php

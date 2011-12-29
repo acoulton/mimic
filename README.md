@@ -1,4 +1,4 @@
-# Mimic
+# Mimic [![Build Status](https://secure.travis-ci.org/acoulton/mimic.png)](http://travis-ci.org/acoulton/mimic)
 
 Mimic is a module for [Kohana Framework v3.2 and up](http://kohanaframework.org)
 that allows easy mocking and testing of an application's interaction with external
@@ -66,6 +66,8 @@ To run the tests on a standard Kohana installation (with the unittest module)
 just run the following from the base folder:
 
     phpunit --bootstrap=modules/unittest/bootstrap.php --group=mimic modules/unittest/tests.php
+
+The Mimic test suite also runs continuously on [Travis CI](http://travis-ci.org/acoulton/mimic) against the current codebase. Helper scripts are provided in the dev/ folder to create a sandbox with up to date Kohana core and required modules.
 
 ## Further Documentation
 Is included with the module, integrated into the Kohana online userguide.
