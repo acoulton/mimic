@@ -13,7 +13,7 @@ before_script:
   - phpenv rehash
 
   # Create a kohana environment
-  - php ./dev/ko-sandbox.php
+  - php ./dev/ko_sandbox.php
 
 # Run the Mimic tests
 script: phpunit --bootstrap=$KO_SANDBOX/modules/unittest/bootstrap.php --group=mimic $KO_SANDBOX/modules/unittest/tests.php
