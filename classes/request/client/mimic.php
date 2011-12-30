@@ -33,6 +33,12 @@ class Request_Client_Mimic extends Request_Client_External
 	 */
 	public function _send_message(Request $request)
 	{
+		// Set a content-length if not set already (fixes #5)
+		if ($request->headers('content-length') === NULL)
+		{
+			$request->headers('content-length', (string) strlen($request->body()));			
+		}
+
 		// Create OR retrieve the Mimic and Mimic_Request_Store instances
 		$mimic = $this->mimic();
 		$store = $this->store();
