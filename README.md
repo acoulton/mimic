@@ -1,6 +1,6 @@
 # Mimic
 
-**[View builds]((http://travis-ci.org/acoulton/mimic) | master: ![Build status - master branch](https://secure.travis-ci.org/acoulton/mimic.png?branch=master) | 
+**[View builds](http://travis-ci.org/acoulton/mimic) | master: ![Build status - master branch](https://secure.travis-ci.org/acoulton/mimic.png?branch=master) | 
 develop: ![Build Status - develop branch](https://secure.travis-ci.org/acoulton/mimic.png?branch=develop) | 
 overall: ![Build Status - overall](https://secure.travis-ci.org/acoulton/mimic.png)**
 
