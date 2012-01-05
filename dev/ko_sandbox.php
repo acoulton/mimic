@@ -6,18 +6,6 @@
 
 // Configure the Kohana core version and modules to use
 
-	// 'auth'       => MODPATH.'auth',       // Basic authentication
-	 'cache'      => MODPATH.'cache',      // Caching with multiple backends
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	 'database'   => MODPATH.'database',   // Database access
-	 'tropo'	=> MODPATH.'tropo',
-	// 'image'      => MODPATH.'image',      // Image manipulation
-	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	 'minion'	=> MODPATH.'minion',
-	 'minion-migrations' => MODPATH.'minion-migrations',
-
 $repos = array(
 	'system' => array(
 		'url' => 'git://github.com/kohana/core.git',
