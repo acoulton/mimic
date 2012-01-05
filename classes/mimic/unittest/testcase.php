@@ -100,4 +100,64 @@ abstract class Mimic_Unittest_Testcase extends Unittest_TestCase
 		$this->assertEquals($expected, $this->mimic->last_request()->body());
 	}
 
+	/**
+	 * Searches the request history for a request to the given URL and (optionally)
+	 * with the specified method, returning TRUE or FALSE.
+	 *
+	 * @param string $url
+	 * @param string $method
+	 * @return boolean
+	 */
+	protected function _search_request_history($url, $method)
+	{
+		foreach ($this->mimic->request_history() as $request)
+		{
+			if (($method !== NULL) AND ($method !== $request->method()))
+			{
+				continue;
+			}
+
+			if ($request->uri() === $url)
+			{
+				return TRUE;
+			}
+		}
+
+		// Nothing found
+		return FALSE;
+
+	}
+
+	/**
+	 * Verify that a request (optionally with a specified method) was made to the
+	 * given URL at some point in execution - for requests where the sequence doesn't
+	 * matter, this is obviously less brittle than asserting a specific request.
+	 *
+	 * @param string $url
+	 * @param string $method
+	 */
+	public function assertMimicRequestsContains($url, $method = NULL)
+	{
+		if ( ! $this->_search_request_history($url, $method))
+		{
+			$this->fail("Expected $method request to $url and none was made");
+		}
+	}
+
+	/**
+	 * Verify that a request (optionally with a specified method) was not made to
+	 * the given URL at any point in execution - for requests where the sequence doesn't
+	 * matter, this is obviously less brittle than asserting a specific request.
+	 *
+	 * @param string $url
+	 * @param string $method
+	 */
+	public function assertMimicRequestsNotContains($url, $method = NULL)
+	{
+		if ($this->_search_request_history($url, $method))
+		{
+			$this->fail("A $method request was made to $url");
+		}
+	}
+
 }

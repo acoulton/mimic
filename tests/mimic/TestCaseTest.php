@@ -88,6 +88,15 @@ class Mimic_TestCaseTest extends Unittest_Testcase {
 			}
 			return;
 		}
+		catch (PHPUnit_Framework_AssertionFailedError $e)
+		{
+			// Check that this is expected to fail
+			if ($should_pass)
+			{
+				$this->fail('Unexpected assertion failure with message '.$e->getMessage());
+			}
+			return;
+		}
 
 		// Check that it is expected to pass
 		if ( ! $should_pass)
@@ -280,6 +289,85 @@ class Mimic_TestCaseTest extends Unittest_Testcase {
 				$this->_mock_request('body', $mock_body));
 
 		$this->_test_assertion($testcase, 'assertMimicLastRequestBody', array($expected), $should_pass);
+	}
+
+	public function provider_should_assert_or_not_requests_contains()
+	{
+		$requests = array(
+			array('method'=>'GET', 'uri' => 'http://foo.bar.com/foo'),
+			array('method'=>'POST', 'uri' => 'http://foo.bar.com/foo'),
+			array('method'=>'GET', 'uri' => 'http://foo.bar.com/bar'),
+		);
+		return array(
+			array($requests, 'http://foo.bar.com/foo', 'POST', TRUE),
+			array($requests, 'http://foo.bar.com/foo', NULL, TRUE),
+			array($requests, 'http://foo.bar.com/foo', 'PUT', FALSE),
+			array($requests, 'http://foo.bar.com/bar', 'GET', TRUE),
+		);
+	}
+
+	/**
+	 * Helper method, as the test strap for assertMimicRequestsContains and
+	 * assertMimicRequestsNotContains is very similar.
+	 *
+	 * @param string $method
+	 * @param array $mock_requests
+	 * @param string $test_url
+	 * @param string $test_method
+	 * @param string $should_pass
+	 */
+	protected function _test_should_or_not_contain($method, $mock_requests, $test_url, $test_method, $should_pass)
+	{
+		// Build an array of mock requests for the stack
+		$request_history = array();
+		foreach ($mock_requests as $mock_request)
+		{
+			$request = $this->_mock_request();
+
+			// Request::uri() will only be called if the method matches the search
+			$request->expects($this->any())
+					->method('uri')
+					->will($this->returnValue($mock_request['uri']));
+
+			// Request::method() will only be called if matching on it
+			$request->expects($this->any())
+					->method('method')
+					->will($this->returnValue($mock_request['method']));
+			$request_history[] = $request;
+		}
+
+		// Mock the testcase
+		$testcase = $this->_testcase_with_mock_mimic('request_history', $request_history);
+
+		// Call and test the assertion
+		$this->_test_assertion($testcase, $method, array($test_url, $test_method), $should_pass);
+	}
+
+	/**
+	 * @dataProvider provider_should_assert_or_not_requests_contains
+	 * @param array $mock_requests
+	 * @param string $test_url
+	 * @param string $test_method
+	 * @param boolean $should_contain Whether the stack should contain the request
+	 */
+	public function test_should_assert_requests_contains($mock_requests, $test_url, $test_method, $should_contain)
+	{
+		$this->_test_should_or_not_contain('assertMimicRequestsContains',
+				$mock_requests, $test_url, $test_method, $should_contain);
+	}
+
+	/**
+	 * @dataProvider provider_should_assert_or_not_requests_contains
+	 * @param array $mock_requests
+	 * @param string $test_url
+	 * @param string $test_method
+	 * @param boolean $should_contain Whether the stack should contain the request
+	 */
+	public function test_should_assert_requests_not_contains($mock_requests, $test_url, $test_method, $should_contain)
+	{
+		$should_pass = ! $should_contain;
+		$this->_test_should_or_not_contain('assertMimicRequestsNotContains',
+				$mock_requests, $test_url, $test_method, $should_pass);
 	}
 
 
