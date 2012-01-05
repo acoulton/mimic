@@ -16,4 +16,4 @@ before_script:
   - php ./dev/ko_sandbox.php
 
 # Run the Mimic tests
-script: phpunit --bootstrap=$KO_SANDBOX/modules/unittest/bootstrap.php --group=mimic $KO_SANDBOX/modules/unittest/tests.php
+script: phpunit --bootstrap=$KO_SANDBOX/modules/unittest/bootstrap.php $KO_SANDBOX/modules/unittest/tests.php
