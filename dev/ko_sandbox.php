@@ -5,14 +5,55 @@
  */
 
 // Configure the Kohana core version and modules to use
+
+	// 'auth'       => MODPATH.'auth',       // Basic authentication
+	 'cache'      => MODPATH.'cache',      // Caching with multiple backends
+	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+	 'database'   => MODPATH.'database',   // Database access
+	 'tropo'	=> MODPATH.'tropo',
+	// 'image'      => MODPATH.'image',      // Image manipulation
+	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
+	// 'unittest'   => MODPATH.'unittest',   // Unit testing
+	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+	 'minion'	=> MODPATH.'minion',
+	 'minion-migrations' => MODPATH.'minion-migrations',
+
 $repos = array(
 	'system' => array(
 		'url' => 'git://github.com/kohana/core.git',
 		'branch' => '3.2/master'
 	),
+	'auth' => array(
+		'url' => 'git://github.com/kohana/auth.git',
+		'branch' => '3.2/master',
+	),
+	'cache' => array(
+		'url' => 'git://github.com/kohana/cache.git',
+		'branch' => '3.2/master',
+	),
+	'codebench' => array(
+		'url' => 'git://github.com/kohana/codebench.git',
+		'branch' => '3.2/master',
+	),
+	'database' => array(
+		'url' => 'git://github.com/kohana/database.git',
+		'branch' => '3.2/master',
+	),
+	'image' => array(
+		'url' => 'git://github.com/kohana/image.git',
+		'branch' => '3.2/master',
+	),
+	'orm' => array(
+		'url' => 'git://github.com/kohana/orm.git',
+		'branch' => '3.2/master',
+	),
 	'unittest' => array(
 		'url' => 'git://github.com/acoulton/unittest.git',
 		'branch' => '3.2/master'
+	),
+	'userguide' => array(
+		'url' => 'git://github.com/kohana/userguide.git',
+		'branch' => '3.2/master',
 	),
 	'mimic' => TRUE,
 );
