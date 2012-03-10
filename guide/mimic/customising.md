@@ -70,7 +70,7 @@ straightforward:
             )
             )));
 
-For more on how requests are matched, see [the section on request matching](matching).
+For more on how requests are matched, see [the section on request matching](matching.md).
 
 ## Response bodies
 
@@ -82,10 +82,10 @@ purposes if required. Likewise the same response body can be used by multiple
 request definitions (for example, if different response headers are required but
 the body is the same).
 
-Response bodies are stored using [response formatters](formatters) which apply an
+Response bodies are stored using [response formatters](formatters.md) which apply an
 appropriate file extension for the content type and can convert the content to a
 human readable format (for example, adding newlines and indentation to JSON responses)
 for easier editing and verification.
 
 ---
-Continue to [Testing with Mimic](testing)
+Continue to [Testing with Mimic](testing.md)

@@ -24,7 +24,7 @@ of the request and the response) and save it to disk for customisation and futur
 use.
 
 To use this feature, you'll need to enable recording mode either in your
-[configuration](config) or by setting [Mimic::enable_recording]\(TRUE).
+[configuration](config.md) or by setting [Mimic::enable_recording]\(TRUE).
 
     // Enable recording
     Mimic::instance()->enable_recording(TRUE);
@@ -34,4 +34,4 @@ To use this feature, you'll need to enable recording mode either in your
         ->execute();
 
 ---
-Continue to [Matching Requests](matching)
+Continue to [Matching Requests](matching.md)

@@ -10,14 +10,14 @@ The usual workflow would be:
 
 * Build your unit tests to excercise your application code, and enable Mimic in
 the setUp method of your tests.
-* Run the unit tests with [recording](recording) enabled to allow Mimic to record the real-world
+* Run the unit tests with [recording](recording.md) enabled to allow Mimic to record the real-world
 behaviour of the external services you are accessing.
-* [Customise](customising) and tidy up your request and response definitions -
+* [Customise](customising.md) and tidy up your request and response definitions -
 remembering to remove any sensitive details.
 * Commit the tests and scenarios to source control, for later re-use on other
 developer machines, CI servers, etc.
 * If and when external APIs change (or you could schedule a regular check) re-run
-the tests with [updating](updating) enabled to automatically refresh your
+the tests with [updating](updating.md) enabled to automatically refresh your
 definitions with new response formats and content, updating your unit tests and
 application code accordingly.
 
@@ -110,4 +110,4 @@ So, your unit test code might look like this:
     }
 
 ---
-Continue to [Updating Definitions](updating)
+Continue to [Updating Definitions](updating.md)
