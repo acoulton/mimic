@@ -12,11 +12,11 @@ debug_headers   | FALSE                           | Add X-Mimic debug headers to
 enable_recording| FALSE                           | Allow recording of requests that aren't matched?
 enable_updating | FALSE                           | Update matched requests by executing and storing new response?
 external_client | NULL                            | Specify an external client to use when executing requests - if NULL will use whatever is set for [Request_Client_External]::$client
-response_formatters | array                       | An array of [formatters](formatters) to use for given content-types
+response_formatters | array                       | An array of [formatters](formatters.md) to use for given content-types
 
 ## Default formatters
 
-As shipped, Mimic uses the following default [formatters](formatters):
+As shipped, Mimic uses the following default [formatters](formatters.md):
 
 Content-Type             | Formatter
 -------------------------|------------
@@ -31,4 +31,4 @@ application/rss+xml      |[Mimic_Response_Formatter_XML]
 * (others)               |[Mimic_Response_Formatter]
 
 ---
-Continue to [Response Formatters](formatters)
+Continue to [Response Formatters](formatters.md)

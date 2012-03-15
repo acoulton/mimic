@@ -1,12 +1,6 @@
 <?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
 
 /**
- * These tests require the vfsStream mock filesystem driver 
- * from https://github.com/mikey179/vfsStream/
- */
-require_once 'vfsStream/vfsStream.php';
-
-/**
  * Base unit tests for all Mimic_Response_Formatter classes
  *
  * @package    Mimic
@@ -20,6 +14,19 @@ abstract class Mimic_Response_FormatterBaseTest extends Unittest_TestCase {
 	protected $_formatter_class_name = NULL;
 	protected $_expect_extension = NULL;
 	protected $_file_system = NULL;	
+	
+	/**
+	 * Requires the vfsStream extension for tests
+	 */
+	public static function setUpBeforeClass()
+	{
+		/**
+		* These tests require the vfsStream mock filesystem driver 
+		* from https://github.com/mikey179/vfsStream/
+		*/
+		require_once 'vfsStream/vfsStream.php';
+	}
+
 	
 	public function setUp()
 	{

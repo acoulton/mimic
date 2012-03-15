@@ -243,6 +243,43 @@ class Mimic_ClientTest extends Unittest_TestCase {
 		$returned_response = $this->_client->_send_message($request);
 		$this->assertSame($response, $returned_response, "The same response instance was returned");
 	}
+
+	public function provider_should_assign_request_content_length_if_missing()
+	{
+		return array(
+			array(NULL, '5', '5'),
+			array('foo', NULL, '3'),
+			array(NULL, NULL, '0'),
+			array('foo', '0', '0')
+		);
+	}
+	
+	/**
+	 * @group ticket.5
+	 * @dataProvider provider_should_assign_request_content_length_if_missing
+	 */
+	public function test_should_assign_request_content_length_if_missing($body, $set_length, $expect_length)
+	{
+		// Create a request
+		$request = Request::factory('http://foo.bar.com/a/page');
+		$request->body($body);
+		if ($set_length !== NULL)
+		{
+			$request->headers('content-length', $set_length);
+		}
+		$response = $request->create_response();
+
+		// Set up Mimic expectations
+		$this->_mock_mimic_methods($this->once(), 'enable_updating', NULL, FALSE);
+		
+		// Mock a store to return response
+		$this->_mock_store_methods($this->once(), 'load', $request, $response);
+
+		// Execute and check the content-length header is present
+		$this->_client->_send_message($request);
+		$this->assertSame($expect_length, $request->headers('content-length'));
+			
+	}
 		
 }
 

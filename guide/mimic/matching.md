@@ -131,4 +131,4 @@ wildcards later.
     );
 
 ---
-Continue to [Customising Responses](customising)
+Continue to [Customising Responses](customising.md)

@@ -23,7 +23,7 @@ recording the details of exactly what was executed to generate the returned resp
 ## Enabling updating
 
 To enable updating mode, simply call [Mimic::enable_updating]\(TRUE) or set the
-appropriate value in your [configuration](config).
+appropriate value in your [configuration](config.md).
 
 ---
-Continue to [Configuration](config)
+Continue to [Configuration](config.md)
