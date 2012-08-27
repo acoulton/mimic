@@ -11,7 +11,7 @@ $repos = array(
 		'branch' => '3.2/master'
 	),
 	'unittest' => array(
-		'url' => 'git://github.com/acoulton/unittest.git',
+		'url' => 'git://github.com/kohana/unittest.git',
 		'branch' => '3.2/master'
 	),
 	'mimic' => TRUE,
