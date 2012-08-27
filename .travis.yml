@@ -8,8 +8,8 @@ env:
 
 before_script:
   # Install vfsStream for unit tests
-  - pyrus channel-discover pear.php-tools.net
-  - pyrus install http://pear.php-tools.net/get/vfsStream-0.11.1.tgz
+  - pear channel-discover pear.bovigo.org
+  - pear install bovigo/vfsStream-beta
   - phpenv rehash
 
   # Create a kohana environment
